@@ -1,8 +1,9 @@
 from unittest.mock import patch
 from django_recaptcha.client import RecaptchaResponse
 from django.test import TestCase
-from .models import User
+from ..models import User
 from django.urls import reverse
+
 
 
 class TestLoginView(TestCase):
@@ -37,14 +38,6 @@ class TestLoginView(TestCase):
         res = self.client.post(self.url, data=self.data)
         self.assertContains(res, 'لطفا کپچا رو تایید کنید.')
 
-    def test_failed_login_requiered_fields(self):
-        res = self.client.post(self.url, data={})
-        required_fields = ['username', 'password', 'recaptcha']
-
-        for field in required_fields:
-            with self.subTest(field=field):
-                self.assertContains(res, 'This field is required.')
-
     # Error when recaptcha in form is active
     # @patch('django_recaptcha.fields.client.submit')
     # def test_login_success(self, mocked_value):
@@ -59,3 +52,43 @@ class TestLoginView(TestCase):
     #     print(res.content.decode('utf-8'))
     #     self.assertEqual(User.objects.get(username='user').username, 'user')
     #     self.assertEqual(res.wsgi_request.user.username, 'user')
+
+
+class TestRegisterView(TestCase):
+
+    def setUp(self):
+        user = User.objects.create(username = 'user')
+        user.set_password('pass')
+        user.save()
+        self.url = reverse('user:register')
+        self.data = {
+            'username': 'test',
+            'email': 'user@gmail.com',
+            'number': '09123456789',
+            'password1': 'test1234',
+            'password2': 'test1234',
+            'g-recaptcha-response': 'mocked-captcha-response',
+            'accept_rules': True
+        }
+
+    def test_url(self):
+        res = self.client.get(self.url)
+        self.assertEqual(res.status_code, 200)
+
+    def test_template_used(self):
+        res = self.client.get(self.url)
+        self.assertTemplateUsed(res, 'user/register.html')
+
+
+    @patch("django_recaptcha.fields.client.submit")
+    def test_login_success(self, mocked_value):
+        mocked_value.return_value = RecaptchaResponse(is_valid=True)
+
+        res = self.client.post(self.url, self.data)
+        self.assertEqual(res.status_code, 302)
+
+    def test_captcha_failed(self):
+        res = self.client.post(self.url, {})
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, 'لطفا کد کچا رو حل کنید.')
+

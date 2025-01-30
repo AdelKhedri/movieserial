@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'user',
-    'django_recaptcha'
+    'django_recaptcha',
 ]
 
 MIDDLEWARE = [
@@ -106,7 +106,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'fa'
 
 TIME_ZONE = 'UTC'
 
@@ -115,10 +115,12 @@ USE_I18N = True
 USE_TZ = True
 
 
+RECAPTCHA_PUBLIC_KEY = '6Lf98MQqAAAAACIxNRHHwJ0Y31dZIH_UJLiuJ2CT'
+RECAPTCHA_PRIVATE_KEY = '6Lf98MQqAAAAAJlg4-6uUsgw3dCuZMvKhgPqmB7R'
+# RECAPTCHA_PUBLIC_KEY = ''
+# RECAPTCHA_PRIVATE_KEY = ''
 
-RECAPTCHA_PUBLIC_KEY = ''
-RECAPTCHA_PRIVATE_KEY = ''
-
+LOGIN_REDIRECT_URL = '/'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 

@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect
 from django.views.generic import View
 from django.contrib.auth import authenticate, login
-from .models import User
-from .forms import LoginForm
+from .forms import LoginForm, RegisterForm, RecaptchaForm
+from django.http import HttpResponse
+from random import randint
+from .otp import OtpCode
 
 
 class LoginView(View):
@@ -10,11 +12,11 @@ class LoginView(View):
     template_name = 'user/login.html'
 
     def get(self, request, *args, **kwargs):
-        return render(request, self.template_name, {'form': LoginForm()})
+        return render(request, self.template_name, {'form': LoginForm(), 'page_name': 'ورود'})
 
     def post(self, request, *args, **kwargs):
         login_form = LoginForm(request.POST)
-        context = {}
+        context = {'page_name': 'ورود'}
 
         if login_form.is_valid():
             username = login_form.cleaned_data.get('username')
@@ -28,3 +30,44 @@ class LoginView(View):
                 context['msg'] = 'failed to authenticate.'
         context['form'] = login_form
         return render(request, self.template_name, context)
+
+
+class RegisterView(View):
+    template_name = 'user/register.html'
+
+    def get(self, request, *args, **kwargs):
+        context = {
+            'recaptcha_form': RecaptchaForm(),
+            'register_form': RegisterForm(),
+            'page_name': 'ثبت نام',
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        context = {
+            'recaptcha_form': RecaptchaForm(),
+            'register_form': RegisterForm(),
+            'page_name': 'ثبت نام',
+        }
+        recaptcha_form = RecaptchaForm(request.POST)
+
+        if recaptcha_form.is_valid():
+            register_form = RegisterForm(request.POST)
+            if register_form.is_valid():
+                register_form.save()
+                number = register_form.cleaned_data['number']
+                code = randint(123456,987989)
+                otp = OtpCode(request, number, code)
+                otp.save()
+                # print(code)
+                return redirect('user:confirm-number')
+
+                # TODO: Send code and redirect to confirm user
+            else:
+                context['register_form'] = register_form
+        context['recaptcha_form'] = recaptcha_form
+        return render(request, self.template_name, context)
+
+
+def home(request):
+    return HttpResponse(f'{request.user}')
