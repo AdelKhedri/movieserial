@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect
 from django.views.generic import View
 from django.contrib.auth import authenticate, login
+from .models import User
 from .forms import LoginForm, RegisterForm, RecaptchaForm
 from django.http import HttpResponse
+from django.conf import settings
 from random import randint
 from .otp import OtpCode
 
@@ -66,6 +68,39 @@ class RegisterView(View):
             else:
                 context['register_form'] = register_form
         context['recaptcha_form'] = recaptcha_form
+        return render(request, self.template_name, context)
+
+
+class ConfirmNumberView(View):
+    template_name = 'user/confirm.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.session.get('number', None) is None:
+                return redirect('user:register')
+        if request.user.is_authenticated:
+            return redirect(settings.LOGIN_REDIRECT_URL)
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name, {'page_name': 'تایید شماره'})
+
+    def post(self, request, *args, **kwargs):
+        context = {'page_name': 'تایید شماره'}
+
+        code = request.POST.get('code', None)
+        if code:
+            otp = OtpCode(request)
+            if otp.validate_code(int(code)):
+                user = User.objects.get(number=otp.number)
+                user.is_active = True
+                user.save()
+                login(request, user)
+                next_url = request.GET.get('next', None)
+                return redirect(next_url if next_url else settings.LOGIN_REDIRECT_URL)
+            else:
+                context['msg'] = 'کد معتبر نیست.'
+        else:
+            context['msg'] = 'لطفا کد زا وارد کنید.'
         return render(request, self.template_name, context)
 
 

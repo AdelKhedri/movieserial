@@ -1,0 +1,32 @@
+{% extends 'user/base-auth.html' %}
+{% block title %}ثبت نام | نت موی{% endblock %}
+{% block content %}
+
+                        <div class="auth-header">
+                            <img src="images/logo.png" class="logo-dark-mode" alt="">
+                            <img src="images/logo-dark.png" class="logo-light-mode" alt="">
+                            <p>تایید حساب موپلی</p>
+                        </div>
+                        <div class="auth-form">
+                            <form method="post">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <div class="form-group">
+                                        <label>کد تایید پیامک شده</label>
+                                        <input type="number" name="code" class="form-control" placeholder="کد">
+                                    </div>
+                                    {% if msg %}
+                                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                        {{ msg }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="auth-btn">
+                                    <button type="submit" class="theme-btn"><span class="far fa-paper-plane"></span>ورود</button>
+                                </div>
+                            </form>
+                            <!-- SOCIAL AUTH -->
+                        </div>
+{% endblock %}
