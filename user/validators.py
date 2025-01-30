@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 
 def validate_phone(value:str):
     if not value.isnumeric():
-        raise ValidationError('نام کاربری باید عددی باشد')
+        raise ValidationError('نام کاربری نباید فقط عددی باشد')
     elif len(value) != 11 or value[:2] != '09':
         raise ValidationError('شماره تلفن نادرست است.')
     return value
@@ -22,5 +22,5 @@ def validate_unique_username(value):
 
 def validate_number_exist(value):
     if get_user_model().objects.filter(number=value).exists():
-        raise ValidationError('نام کاربری تکراری است.')
+        raise ValidationError('شماره تلفن تکراری است.')
     return value

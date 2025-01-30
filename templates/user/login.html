@@ -1,25 +1,10 @@
-{% extends 'base.html' %}
+{% extends 'user/base-auth.html' %}
 
 {% load static %}
 
+{% block title %}ورود | نت موی{% endblock %}
 {% block content %}
-<main class="main">
 
-    <div class="site-breadcrumb" style="background: url({% static 'images/01-bg-ganr.jpeg' %})">
-        <div class="container">
-            <h2 class="breadcrumb-title">ورود</h2>
-            <ul class="breadcrumb-menu" dir="rtl">
-                <li><a href="index.html">خانه</a></li>
-                <li class="active">ورود</li>
-            </ul>
-        </div>
-    </div>
-
-
-    <div class="auth-area py-100" dir="rtl">
-        <div class="container">
-            <div class="col-md-5 col-lg-4 mx-auto">
-                <div class="auth-wrap">
                     <div class="auth-header">
                         <img src="{% static 'images/logo.png' %}" class="logo-dark-mode" alt="">
                         <img src="{% static 'images/logo-dark.png' %}" class="logo-light-mode" alt="">
@@ -50,9 +35,6 @@
                             {% endif %}
                             <div class="form-group">
                                 {{ form.password.as_field_group }}
-                                <!-- {% for error in form.password.errors %}
-                                    {{ error }}
-                                {% endfor %} -->
                             </div>
                             {% if form.recaptcha.errors %}
                             <div class="alert alert-warning alert-dismissible fade show" role="alert">
@@ -70,7 +52,7 @@
                                         مرا بخاطر بسپار
                                     </label>
                                 </div>
-                                <a href="forgot-password.html">فراموشی رمز </a>
+                                <a href="{% url 'user:forgot-password' %}">فراموشی رمز </a>
                             </div>
                             <div class="auth-btn">
                                 <button type="submit" class="theme-btn"><span
@@ -80,19 +62,16 @@
                         <div class="auth-footer">
                             <div class="auth-social">
                                 <span class="auth-divider">یا</span>
-                                <div class="auth-social-list">
-                                    <a href="#" class="auth-fb"><i class="fab fa-facebook-f"></i>فیسبوک</a>
-                                    <a href="#" class="auth-gl"><i class="fab fa-google"></i>گوگل</a>
-                                    <a href="#" class="auth-tw"><i class="fab fa-x-twitter"></i>توییتر</a>
+                                <div class="auth-social-list" >
+                                    <!-- <a href="#" class="auth-fb"><i class="fab fa-facebook-f"></i>فیسبوک</a> -->
+                                    <!-- <form action="/accounts/google/login/?next=/" method="post" id="login-google">
+                                        {% csrf_token %}
+                                        <a onclick="document.getElementById('login-google').submit()" class="auth-gl"><i class="fab fa-google"></i>گوگل</a>
+                                    </form> -->
+                                    <!-- <a href="#" class="auth-tw"><i class="fab fa-x-twitter"></i>توییتر</a> -->
                                 </div>
                             </div>
-                            <p>اکانت کاربری ندارید ؟ <a href="register.html">ثبت نام</a></p>
+                            <p>اکانت کاربری ندارید ؟ <a href="{% url 'user:register' %}">ثبت نام</a></p>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-</main>
 {% endblock %}

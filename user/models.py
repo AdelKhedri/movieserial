@@ -44,8 +44,8 @@ class User(AbstractUser):
     objects = Manager()
 
     class Meta:
-        verbose_name = ""
-        verbose_name_plural = ""
+        verbose_name = "کاربر"
+        verbose_name_plural = "کاربر ها "
 
     def __str__(self):
         return self.get_full_name() if self.get_full_name() else self.username

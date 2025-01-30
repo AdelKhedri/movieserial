@@ -1,0 +1,71 @@
+{% extends 'user/base-auth.html' %}
+{% load static %}
+{% block title %}ثبت نام | نت موی{% endblock %}
+{% block content %}
+                        <div class="auth-header">
+                            <img src="images/logo.png" class="logo-dark-mode" alt="">
+                            <img src="images/logo-dark.png" class="logo-light-mode" alt="">
+                            <p>ساخت حساب در موپلی</p>
+                        </div>
+                        <div class="auth-form">
+                            <form method="post">
+                                {% csrf_token %}
+                                {% for field in register_form %}
+                                    {% if field.field.widget.input_type != 'checkbox' %}
+                                    <div class="form-group">
+                                        {{ field.as_field_group }}
+                                        {% for error in field.errors %}
+                                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                            {{ error }}
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                {% endfor %}
+                                <ul>
+                                    <li><p>پسورد باید شامل متن و عدد باشد</p></li>
+                                    <li><p>پسورد باید بیشتر از ۷ کاراکتر باشد</p></li>
+                                    <li><p>پسورد باید نباید مشابه نام کاربری باشد</p></li>
+                                </ul>
+                                {% if register_form.non_field_errors %}
+                                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                        {{ register_form.non_field_errors }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                {% endif %}
+
+                                <div class="auth-check">
+                                    <div class="form-check">
+                                        {{ register_form.accept_rules }}
+                                        <!-- <input class="form-check-input" type="checkbox" value="" id="id_accept_rules"  name="accept_rules" required> -->
+                                        <label class="form-check-label" for="id_accept_rules">
+                                           من موافقت می کنم با <a href="#">قوانین و مقررات.</a>
+                                        </label>
+                                    </div>
+                                </div>
+                                {% if register_form.accept_rules.errors %}
+                                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                        پذیرش قوانین اجباری است.
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                {% endif %}
+
+
+                                {{ recaptcha_form.recaptcha }}
+                                {% if recaptcha_form.recaptcha %}
+                                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                        لطفا کد کچا رو حل کنید.
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                {% endif %}
+                                <div class="auth-btn">
+                                    <button type="submit" class="theme-btn"><span class="far fa-paper-plane"></span>ورود</button>
+                                </div>
+                            </form>
+                            <div class="auth-footer">
+                                <p>قبلا ثبت نام کردی ؟ <a href="{% url 'user:login' %}">ورود</a></p>
+                            </div>
+                            <!-- SOCIAL AUTH -->
+                        </div>
+{% endblock %}
