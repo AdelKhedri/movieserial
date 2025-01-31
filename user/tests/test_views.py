@@ -3,7 +3,8 @@ from django_recaptcha.client import RecaptchaResponse
 from django.test import TestCase
 from ..models import User
 from django.urls import reverse
-
+from datetime import datetime, timedelta
+from freezegun import freeze_time
 
 
 class TestLoginView(TestCase):
@@ -162,4 +163,73 @@ class TestConfirmView(TestCase):
         confirm_res = self.client.post(self.confirm_url, {'code': 2323})
         self.assertContains(confirm_res, 'کد معتبر نیست.')
 
-    
+
+class TestForgotPasswordView(TestCase):
+    def setUp(self):
+        user = User.objects.create(username='user', number='09123456789')
+        user.set_password('pass')
+        user.save()
+        self.login_url = reverse('user:login')
+        self.url = reverse('user:forgot-password')
+
+    def test_url(self):
+        res = self.client.get(self.url)
+        self.assertEqual(res.status_code, 200)
+
+    def test_template_used(self):
+        res = self.client.get(self.url)
+        self.assertTemplateUsed(res, 'user/forgot-password.html')
+
+    @patch('django_recaptcha.fields.client.submit')
+    def test_success_send_link(self, mocked_value):
+        mocked_value.return_value = RecaptchaResponse(is_valid=True)
+        data = {
+            'g-recaptcha-response': 'RESPONSE',
+            'number': '09123456789'
+        }
+        
+        res = self.client.post(self.url, data=data)
+        self.assertContains(res, 'کد با موفقیت ارسال شد.')
+
+    @patch('django_recaptcha.fields.client.submit')
+    def test_failed_send_link_number_not_found(self, mocked_value):
+        mocked_value.return_value = RecaptchaResponse(is_valid=True)
+        data = {
+            'g-recaptcha-response': 'RESPONSE',
+            'number': '65231'
+        }
+
+        res = self.client.post(self.url, data=data)
+        self.assertContains(res, 'شماره موبایل اشتباه است.')
+
+    @patch('django_recaptcha.fields.client.submit')
+    def test_failed_send_link_last_sended(self, mocked_value):
+        mocked_value.return_value = RecaptchaResponse(is_valid=True)
+        data = {
+            'g-recaptcha-response': 'RESPONSE',
+            'number': '09123456789'
+        }
+
+        res = self.client.post(self.url, data=data)
+        res = self.client.post(self.url, data=data)
+        self.assertContains(res, 'لطفا 5 دقیقه از آخرین تلاش خود صبر کنید.')
+
+
+    @freeze_time(datetime.now())
+    @patch('django_recaptcha.fields.client.submit')
+    def test_failed_send_link_last_sended(self, mocked_value):
+        mocked_value.return_value = RecaptchaResponse(is_valid=True)
+        start_time = datetime.now()
+        data = {
+            'g-recaptcha-response': 'RESPONSE',
+            'number': '09123456789'
+        }
+
+        res = self.client.post(self.url, data=data)
+        
+        # freeze time
+        with freeze_time(start_time + timedelta(minutes=5, seconds=2)):
+            res = self.client.post(self.url, data=data)
+            self.assertContains(res, 'کد با موفقیت ارسال شد.')
+
+
