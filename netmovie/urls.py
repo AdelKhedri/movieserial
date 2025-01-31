@@ -21,7 +21,7 @@ from user.views import home
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('user/', include('user.urls')),
-    path('', home),
+    path('', home, name='home'),
     # path("welcome/", TemplateView.as_view(template_name="welcome.html"), name="welcome"),
     # path("dashboard/", TemplateView.as_view(template_name="dashboard.html"), name="dashboard"),
     # path("goodbye/", TemplateView.as_view(template_name="goodbye.html"), name="goodbye"),

@@ -5,6 +5,8 @@ from ..models import User
 from django.urls import reverse
 from datetime import datetime, timedelta
 from freezegun import freeze_time
+from ..models import ForgotPasswordLink
+from django.utils import timezone
 
 
 class TestLoginView(TestCase):
@@ -233,3 +235,39 @@ class TestForgotPasswordView(TestCase):
             self.assertContains(res, 'کد با موفقیت ارسال شد.')
 
 
+class TestForgotPasswordChangePasswordView(TestCase):
+    def setUp(self):
+        user = User.objects.create(username = 'user')
+        user.set_password('pass')
+        user.save()
+        
+        forgot_password_link = str(ForgotPasswordLink.objects.create(user=user, time=timezone.now() + timedelta(minutes=5)).link)
+        self.link = forgot_password_link.replace(forgot_password_link[:4], '0000', 1)
+        self.url = reverse('user:forgot-password-change-password', args=[forgot_password_link])
+
+    def test_url(self):
+        res = self.client.get(self.url)
+        self.assertEqual(res.status_code, 200)
+
+    def test_template_used(self):
+        res = self.client.get(self.url)
+        self.assertTemplateUsed(res, 'user/forgot-password.html')
+
+    @patch('django_recaptcha.fields.client.submit')
+    def test_change_password_success(self, mocked_value):
+        mocked_value.return_value = RecaptchaResponse(is_valid=True)
+        data = {
+            'g-recaptcha-response': 'RESPONSE',
+            'password1': 'new_pass',
+            'password2': 'new_pass',
+        }
+        res = self.client.post(self.url, data=data)
+        # print(res.content.decode('utf-8'))
+        self.assertContains(res, 'تغییر پسورد موفقیت آمیز بود.')
+
+    @patch('django_recaptcha.fields.client.submit')
+    def test_change_password_failed_invalid_link(self, mocked_value):
+        mocked_value.return_value = RecaptchaResponse(is_valid=True)
+        url = reverse('user:forgot-password-change-password', kwargs={'link': self.link})
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 404)

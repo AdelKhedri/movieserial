@@ -72,3 +72,24 @@ class RegisterForm(forms.ModelForm):
 
 class RecaptchaForm(forms.Form):
     recaptcha = ReCaptchaField(widget=ReCaptchaV2Checkbox)
+
+
+class ChangePasswordForgotPasswordFrom(forms.Form):
+    password1 = forms.CharField(label='پسورد', widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+    password2 = forms.CharField(label='تکرار پسورد', widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        password1, password2 = cleaned_data.get("password1", None), cleaned_data.get("password2", None)
+
+        if (
+            not password1
+            or not password2
+            or len(password1) < 7
+            or password1.isnumeric()
+            or password1.isalpha()
+        ):
+            raise ValidationError("لطفا موارد رو رعایت کنید.")
+        if password1 != password2:
+            raise ValidationError('پسورد ها با هم مطابقت ندارند.')
+        return cleaned_data

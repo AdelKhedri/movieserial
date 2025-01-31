@@ -1,8 +1,8 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import View
 from django.contrib.auth import authenticate, login
 from .models import User, ForgotPasswordLink
-from .forms import LoginForm, RegisterForm, RecaptchaForm
+from .forms import LoginForm, RegisterForm, RecaptchaForm, ChangePasswordForgotPasswordFrom
 from django.http import HttpResponse
 from django.conf import settings
 from random import randint
@@ -106,11 +106,12 @@ class ConfirmNumberView(View):
         return render(request, self.template_name, context)
 
 
-class ForgetPasswordView(View):
+class ForgotPasswordView(View):
     template_name = 'user/forgot-password.html'
 
     def get(self, request, *args, **kwargs):
         context = {
+            'page_title': 'فراموشی رمز عبور | نت موی',
             'page_name': 'فراموشی رمز عبور',
             'recaptcha_form': RecaptchaForm(),
             }
@@ -145,6 +146,43 @@ class ForgetPasswordView(View):
                 'msg': 'captcha failed',
                 })
         return render(request, self.template_name, context)
+
+
+class ForgotPasswordChangePasswordView(View):
+    template_name = 'user/forgot-password.html'
+
+    def dispatch(self, request, link, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect('home')
+        self.context = {
+            'page_title': 'تنظیم پسورد جدید | نت موی',
+            'page_name': 'تنظیم رمز عبور جدید',
+            'change_password': ChangePasswordForgotPasswordFrom(),
+            'recaptcha_form': RecaptchaForm(),
+            }
+        return super().dispatch(request, link, *args, **kwargs)
+
+    def get(self, request, link, *args, **kwargs):
+        get_object_or_404(ForgotPasswordLink, link=link)
+        return render(request, self.template_name, self.context)
+
+    def post(self, request, link, *args, **kwargs):
+        recaptcha_form = RecaptchaForm(request.POST)
+        if recaptcha_form.is_valid():
+            forgot_password_link = get_object_or_404(ForgotPasswordLink, link=link)
+            change_password_form = ChangePasswordForgotPasswordFrom(request.POST)
+            if change_password_form.is_valid():
+                user = forgot_password_link.user
+                password = change_password_form.cleaned_data.get('password1')
+                user.set_password(password)
+                user.save()
+                forgot_password_link.delete()
+                self.context['msg'] = 'change password successful'
+            else:
+                self.context['change_password'] = change_password_form
+        else:
+            self.context['msg'] = 'invalid captcha'
+        return render(request, self.template_name, self.context)
 
 
 def home(request):
