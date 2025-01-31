@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser, UserManager
 from .validators import validate_phone, validate_number_exist, validate_unique_username, validate_unique_email
 from django.core.exceptions import ValidationError
+from uuid import uuid4
 
 
 class Manager(UserManager):
@@ -49,3 +50,17 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.get_full_name() if self.get_full_name() else self.username
+
+
+class ForgotPasswordLink(models.Model):
+    link = models.UUIDField(default=uuid4(), verbose_name='لینک')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='کاربر')
+    time = models.DateTimeField(verbose_name='زمان ارسال لینک')
+
+    class Meta:
+        verbose_name = 'لینک بازیابی رمز عبور'
+        verbose_name_plural = 'لینک های بازیابی رمز عبور'
+
+
+    def __str__(self):
+        return self.user.__str__()

@@ -1,12 +1,14 @@
 from django.shortcuts import render, redirect
 from django.views.generic import View
 from django.contrib.auth import authenticate, login
-from .models import User
+from .models import User, ForgotPasswordLink
 from .forms import LoginForm, RegisterForm, RecaptchaForm
 from django.http import HttpResponse
 from django.conf import settings
 from random import randint
 from .otp import OtpCode
+from datetime import timedelta
+from django.utils import timezone
 
 
 class LoginView(View):
@@ -101,6 +103,47 @@ class ConfirmNumberView(View):
                 context['msg'] = 'کد معتبر نیست.'
         else:
             context['msg'] = 'لطفا کد زا وارد کنید.'
+        return render(request, self.template_name, context)
+
+
+class ForgetPasswordView(View):
+    template_name = 'user/forgot-password.html'
+
+    def get(self, request, *args, **kwargs):
+        context = {
+            'page_name': 'فراموشی رمز عبور',
+            'recaptcha_form': RecaptchaForm(),
+            }
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        context = {'page_name': 'فراموشی رمز عبور'}
+        recaptcha_form = RecaptchaForm(request.POST)
+        if recaptcha_form.is_valid():
+            number = request.POST.get('number', None)
+            users = User.objects.filter(number=number)
+
+            if users.exists():
+                links = ForgotPasswordLink.objects.filter(user=users.first())
+                if links.exists():
+                    if links.filter(time__gte = timezone.now()).exists():
+                        context['msg'] = 'please wait'
+                    else:
+                        links.first().delete()
+                        ForgotPasswordLink.objects.create(user=users.first(), time = timezone.now() + timedelta(minutes=5))
+                        # TODO: send forgot_password_inc.link to number
+                        context['msg'] = 'link sended'
+                else:
+                    ForgotPasswordLink.objects.create(user=users.first(), time = timezone.now() + timedelta(minutes=5))
+                    # TODO: send forgot_password_inc.link to number
+                    context['msg'] = 'link sended'
+            else:
+                context['msg'] = 'number not found'
+        else:
+            context.update({
+                'recaptcha_form': recaptcha_form,
+                'msg': 'captcha failed',
+                })
         return render(request, self.template_name, context)
 
 
