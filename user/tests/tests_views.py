@@ -382,3 +382,56 @@ class TestLogoutView(TestCase):
     def test_login_required(self):
         res = self.client.get(self.url)
         self.assertRedirects(res, reverse('user:login'))
+
+
+class TestChangePasswordView(TestCase):
+
+    @patch('django_recaptcha.fields.client.submit')
+    def setUp(self, mocked_value):
+        mocked_value.return_value = RecaptchaResponse(is_valid=True)
+
+        user = User.objects.create(username='user')
+        user.is_active = True
+        user.set_password('pass')
+        user.save()
+        self.data = {
+            'username': 'user',
+            'password': 'pass',
+            'g-recaptcha-response': 'RESPONSE',
+        }
+        self.change_password_data = {
+            'password1': 'new_pass',
+            'password2': 'new_pass',
+            'last_password': 'pass',
+        }
+        self.url = reverse('user:change-password')
+        self.login_url = reverse('user:login')
+        self.client.post(self.login_url, data=self.data, follow=True)
+
+    def test_url(self):
+        res = self.client.get(self.url)
+        self.assertEqual(res.status_code, 200)
+
+    def test_template_used(self):
+        res = self.client.get(self.url)
+        self.assertTemplateUsed(res, 'user/change-password.html')
+
+    def test_change_password_success(self):
+        res = self.client.post(self.url, data=self.change_password_data)
+        self.assertContains(res, 'تغییر پسورد با موفقیت انجام شد.')
+
+    def test_change_password_failed_invalid_last_password(self):
+        data = self.change_password_data
+        data['last_password'] = 'test'
+        res = self.client.post(self.url, data=self.change_password_data)
+        self.assertContains(res, 'پسورد قبلی اشتباه است.')
+
+    def test_change_password_failed_not_matched_passwords(self):
+        data = self.change_password_data
+        data.update({
+            'password1': 'test',
+            'password2': 'tests',
+            'last_password': 'asdasdas'
+            })
+        res = self.client.post(self.url, data=self.change_password_data)
+        self.assertContains(res, 'لطفا موارد رو رعایت کنید.')

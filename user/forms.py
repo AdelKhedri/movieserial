@@ -119,3 +119,13 @@ class UserForm(forms.ModelForm):
             'email': forms.EmailInput(attrs={'class': 'form-control'}),
             'number': forms.TextInput(attrs={'class': 'form-control'}),
         }
+
+
+class ChangePasswordForm(ChangePasswordForgotPasswordFrom):
+    last_password = forms.CharField(label='پسورد قبلی', max_length=150, widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+
+    def save(self, user):
+        password = self.cleaned_data['password1']
+        user.set_password(password)
+        user.save()
+        return user
