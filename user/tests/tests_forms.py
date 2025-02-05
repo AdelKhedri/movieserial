@@ -5,9 +5,9 @@ from unittest.mock import patch
 from ..forms import RegisterForm
 
 
-class TestLoginView(TestCase):
+class TestRegisterView(TestCase):
     def setUp(self):
-        user = User.objects.create(username='user', email='user@gmail.com')
+        user = User.objects.create(username='user', email='user@gmail.com', number='09123456782')
         user.set_password('pass')
         user.save()
 
@@ -24,6 +24,7 @@ class TestLoginView(TestCase):
         data = {
             'username': 'user',
             'email': 'user@gmail.com',
+            'number': '09123456789',
             'password1': 'pass1234', 
             'password2': 'pass1234',
             'accept_rules': True
@@ -32,17 +33,18 @@ class TestLoginView(TestCase):
         self.assertFalse(form.is_valid())
         self.assertEqual(form.errors['username'][0], 'نام کاربری تکراری است.')
 
-    def test_username_duplicate(self):
+    def test_number_duplicate(self):
         data = {
             'username': 'user',
             'email': 'user@gmail.com',
+            'number': '09123456782',
             'password1': 'pass1234', 
             'password2': 'pass1234',
             'accept_rules': True
         }
         form = RegisterForm(data=data)
         self.assertFalse(form.is_valid())
-        self.assertEqual(form.errors['username'][0], 'نام کاربری تکراری است.')
+        self.assertEqual(form.errors['number'][0], 'شماره تلفن تکراری است.')
 
     def test_email_duplicate(self):
         data = {

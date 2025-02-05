@@ -2,7 +2,9 @@ from django import forms
 from django_recaptcha.fields import ReCaptchaField
 from django_recaptcha.widgets import ReCaptchaV2Checkbox
 from django.core.exceptions import ValidationError
-from .models import User
+from .models import Profile, User
+from django.contrib.auth import authenticate
+from .validators import validate_number_exist, validate_unique_email, validate_unique_username
 
 
 class LoginForm(forms.Form):
@@ -25,16 +27,14 @@ class RegisterForm(forms.ModelForm):
     accept_rules = forms.BooleanField(label='پذیرش قوانین سایت', widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
     password1 = forms.CharField(label='پسورد', widget=forms.PasswordInput(attrs={'class': 'form-control'}))
     password2 = forms.CharField(label='تکرار پسورد', widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+    username = forms.CharField(label='نام کاربری', validators=[validate_unique_username], widget=forms.TextInput(attrs={'class': 'form-control'}))
+    email = forms.CharField(label='ایمیل', validators=[validate_unique_email], widget=forms.TextInput(attrs={'class': 'form-control'}))
+    number = forms.CharField(label='شماره', validators=[validate_number_exist], widget=forms.TextInput(attrs={'class': 'form-control'}))
 
     class Meta:
         model = User
         fields = ["username", "email", "number"]
-    
-        widgets = {
-            'username': forms.TextInput(attrs={'class': 'form-control'}),
-            'email': forms.EmailInput(attrs={'class': 'form-control'}),
-            'number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '09123456789'}),
-        }
+
     
     def save(self, commit=True):
         user = super().save(commit=False)
@@ -93,3 +93,29 @@ class ChangePasswordForgotPasswordFrom(forms.Form):
         if password1 != password2:
             raise ValidationError('پسورد ها با هم مطابقت ندارند.')
         return cleaned_data
+
+
+class ProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        exclude = ['user', ]
+    
+        widgets = {
+            'picture': forms.FileInput(attrs={'class': 'profile-file-input'}),
+            'gender': forms.Select(attrs={'class': 'form-control'}),
+            'about': forms.Textarea(attrs={'class': 'form-control'}),
+        }
+
+
+class UserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'username', 'email', 'number']
+    
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'username': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'number': forms.TextInput(attrs={'class': 'form-control'}),
+        }

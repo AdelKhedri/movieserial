@@ -120,10 +120,13 @@ RECAPTCHA_PRIVATE_KEY = '6Lf98MQqAAAAAJlg4-6uUsgw3dCuZMvKhgPqmB7R'
 # RECAPTCHA_PUBLIC_KEY = ''
 # RECAPTCHA_PRIVATE_KEY = ''
 
-LOGIN_REDIRECT_URL = '/'
+LOGIN_URL = '/user/login/'
+LOGIN_REDIRECT_URL = '/user/profile/'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
+MEDIA_URL = 'media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')

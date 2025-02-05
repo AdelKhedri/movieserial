@@ -1,14 +1,15 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import View
 from django.contrib.auth import authenticate, login
-from .models import User, ForgotPasswordLink
-from .forms import LoginForm, RegisterForm, RecaptchaForm, ChangePasswordForgotPasswordFrom
+from .models import Profile, User, ForgotPasswordLink
+from .forms import LoginForm, ProfileUpdateForm, RegisterForm, RecaptchaForm, ChangePasswordForgotPasswordFrom, UserForm
 from django.http import HttpResponse
 from django.conf import settings
 from random import randint
 from .otp import OtpCode
 from datetime import timedelta
 from django.utils import timezone
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class LoginView(View):
@@ -29,7 +30,7 @@ class LoginView(View):
             if user is not None:
                 login(request, user)
                 next_url = request.GET.get('next', None)
-                return redirect(next_url if next_url else '/admin/login/')
+                return redirect(next_url if next_url else settings.LOGIN_REDIRECT_URL)
             else:
                 context['msg'] = 'failed to authenticate.'
         context['form'] = login_form
@@ -182,6 +183,43 @@ class ForgotPasswordChangePasswordView(View):
                 self.context['change_password'] = change_password_form
         else:
             self.context['msg'] = 'invalid captcha'
+        return render(request, self.template_name, self.context)
+
+
+class DashboardView(LoginRequiredMixin, View):
+    template_name = 'user/profile.html'
+
+    def setup(self, request, *args, **kwargs):
+
+        if request.user.is_authenticated:
+            Profile.objects.get_or_create(user=request.user)
+            self.context = {
+                'profile_form': ProfileUpdateForm(instance=request.user.profile),
+                'user_form': UserForm(instance=request.user),
+                'user': request.user
+            }
+        return super().setup(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name, self.context)
+
+    def post(self, request, *args, **kwargs):
+        profile_ins = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
+        user_ins = UserForm(request.POST, instance=request.user)
+
+        if profile_ins.has_changed():
+            if profile_ins.is_valid():
+                profile_ins.save()
+                self.context['profile_form_msg'] = 'profile update success'
+            self.context['profile_form'] = profile_ins
+
+        if user_ins.has_changed():
+            if user_ins.is_valid():
+                user_ins.save()
+                request.user.refresh_from_db()
+                self.context['user'] = request.user
+                self.context['user_form_msg'] = 'user update success'
+            self.context['user_form'] = user_ins
         return render(request, self.template_name, self.context)
 
 
