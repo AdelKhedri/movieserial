@@ -350,3 +350,35 @@ class TestProfileView(TestCase):
         res = self.client.post(self.login_url, data=self.user_data)
         res = self.client.post(self.url, data=data)
         self.assertContains(res, 'کاربر با این شماره تلفن از قبل موجود است.')
+
+
+class TestLogoutView(TestCase):
+    def setUp(self):
+        user = User.objects.create(username='user')
+        user.is_active = True
+        user.set_password('pass')
+        user.save()
+        self.data = {
+            'username': 'user',
+            'password': 'pass',
+            'g-recaptcha-response': 'RESPONSE',
+        }
+        
+        self.url = reverse('user:logout')
+        self.login_url = reverse('user:login')
+
+    @patch('django_recaptcha.fields.client.submit')
+    def test_logout_success(self, mocked_value):
+        mocked_value.return_value = RecaptchaResponse(is_valid=True)
+        
+        res = self.client.post(self.login_url, data=self.data, follow=True)
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(res.wsgi_request.user.is_authenticated)
+        
+        res = self.client.get(self.url)
+        self.assertEqual(res.status_code, 302)
+        self.assertFalse(res.wsgi_request.user.is_authenticated)
+
+    def test_login_required(self):
+        res = self.client.get(self.url)
+        self.assertRedirects(res, reverse('user:login'))
