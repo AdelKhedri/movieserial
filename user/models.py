@@ -1,13 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, UserManager
-from .validators import validate_phone, validate_number_exist, validate_unique_username, validate_unique_email
+from .validators import validate_phone, validate_username
 from django.core.exceptions import ValidationError
 from uuid import uuid4
 
 
 class Manager(UserManager):
 
-    def create_user(self, number, email, password=None, **extra_fields):
+    def create_user(self, number, username, email, password=None, **extra_fields):
         if not password:
             raise ValidationError("user must have password.")
         elif not number:
@@ -16,30 +16,31 @@ class Manager(UserManager):
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
         user.number = number
+        user.username = username
         user.set_password(password)
         user.save()
         return user
 
     def create_superuser(
-        self, number, email, password=None, **extra_fields
+        self, number, username, email, password=None, **extra_fields
     ):
         extra_fields.setdefault("is_active", True)
         extra_fields.setdefault("is_superuser", True)
         extra_fields.setdefault("is_staff", True)
-        return self.create_user(number, email, password, **extra_fields)
+        return self.create_user(number, username, email, password, **extra_fields)
 
 
 class User(AbstractUser):
     number = models.CharField(
         max_length=11,
         unique=True,
-        validators=[validate_phone, validate_number_exist],
+        validators=[validate_phone],
         verbose_name="شماره تلفن",
     )
     is_active = models.BooleanField(default=False, verbose_name="فعال")
     special_time = models.DateTimeField(null=True, verbose_name="زمان اشتراک")
-    email = models.EmailField(unique=True, validators=[validate_unique_email], verbose_name="ایمیل")
-    username = models.CharField(max_length=150, unique=True, validators=[validate_unique_username], verbose_name='نام کاربری')
+    email = models.EmailField(unique=True, verbose_name="ایمیل")
+    username = models.CharField(max_length=150, validators=[validate_username], unique=True, verbose_name='نام کاربری')
 
     REQUIRED_FIELDS = ["number", "email"]
     objects = Manager()
@@ -61,6 +62,22 @@ class ForgotPasswordLink(models.Model):
         verbose_name = 'لینک بازیابی رمز عبور'
         verbose_name_plural = 'لینک های بازیابی رمز عبور'
 
+
+    def __str__(self):
+        return self.user.__str__()
+
+
+class Profile(models.Model):
+    gender_types = (('femal', 'مرد'), ('mel', 'زن'))
+    user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name='کاربر')
+    picture = models.ImageField(blank=True, upload_to='images/', verbose_name='عکس')
+    gender = models.CharField(blank=True, choices=gender_types, default='femal', max_length=5, verbose_name='جنسیت')
+    about = models.TextField(blank=True, verbose_name='درباره')
+
+    class Meta:
+        verbose_name = 'پروفایل'
+        verbose_name_plural = 'پروفایل ها'
+        ordering = []
 
     def __str__(self):
         return self.user.__str__()

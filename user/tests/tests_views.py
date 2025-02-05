@@ -1,11 +1,10 @@
 from unittest.mock import patch
 from django_recaptcha.client import RecaptchaResponse
 from django.test import TestCase
-from ..models import User
+from ..models import User, ForgotPasswordLink
 from django.urls import reverse
 from datetime import datetime, timedelta
 from freezegun import freeze_time
-from ..models import ForgotPasswordLink
 from django.utils import timezone
 
 
@@ -84,7 +83,7 @@ class TestRegisterView(TestCase):
 
 
     @patch("django_recaptcha.fields.client.submit")
-    def test_login_success(self, mocked_value):
+    def test_register_success(self, mocked_value):
         mocked_value.return_value = RecaptchaResponse(is_valid=True)
 
         res = self.client.post(self.url, self.data)
@@ -262,7 +261,6 @@ class TestForgotPasswordChangePasswordView(TestCase):
             'password2': 'new_pass',
         }
         res = self.client.post(self.url, data=data)
-        # print(res.content.decode('utf-8'))
         self.assertContains(res, 'تغییر پسورد موفقیت آمیز بود.')
 
     @patch('django_recaptcha.fields.client.submit')
@@ -271,3 +269,84 @@ class TestForgotPasswordChangePasswordView(TestCase):
         url = reverse('user:forgot-password-change-password', kwargs={'link': self.link})
         res = self.client.get(url)
         self.assertEqual(res.status_code, 404)
+
+
+class TestProfileView(TestCase):
+    def setUp(self):
+        self.user_data = {
+            'username': 'user',
+            'password': 'password',
+            'g-recaptcha-response': 'RESPONSE'
+        }
+        self.profile_data = {
+            'username': 'user',
+            'email': 'user@gmail.com',
+            'number': '09123456789',
+            'first_name': 'user',
+            'last_name': '',
+            'about': ''
+        }
+        User.objects.create(username='user1', email='sa@gmail.com', number='09123456788')
+        user = User.objects.create(username='user', email='user@gmail.com', number='09123456789')
+        user.set_password('password')
+        user.is_active = True
+        user.save()
+
+        self.url = reverse('user:profile')
+        self.login_url = reverse('user:login')
+
+
+    @patch('django_recaptcha.fields.client.submit')
+    def test_url(self, mocked_value):
+        mocked_value.return_value = RecaptchaResponse(is_valid=True)
+
+        res = self.client.post(self.login_url, data=self.user_data)
+        self.assertTrue(res.wsgi_request.user.is_authenticated)
+        res = self.client.get(self.url)
+        self.assertEqual(res.status_code, 200)
+
+    @patch('django_recaptcha.fields.client.submit')
+    def test_template_used(self, mocked_value):
+        mocked_value.return_value = RecaptchaResponse(is_valid=True)
+
+        res = self.client.post(self.login_url, data=self.user_data)
+        res = self.client.get(self.url)
+        self.assertTemplateUsed(res, 'user/profile.html')
+
+    @patch('django_recaptcha.fields.client.submit')
+    def test_update_username_success(self, mocked_value):
+        mocked_value.return_value = RecaptchaResponse(is_valid=True)
+
+        res = self.client.post(self.login_url, data=self.user_data)
+        res = self.client.post(self.url, data=self.profile_data)
+        self.assertContains(res, 'پروفایل با موفقیت آپدیت شد.')
+
+    @patch('django_recaptcha.fields.client.submit')
+    def test_update_username_failed_duplicated_username(self, mocked_value):
+        mocked_value.return_value = RecaptchaResponse(is_valid=True)
+
+        data = self.profile_data
+        data['username'] = 'user1'
+        res = self.client.post(self.login_url, data=self.user_data)
+        res = self.client.post(self.url, data=data)
+        self.assertContains(res, 'کاربر با این نام کاربری از قبل موجود است.')
+
+    @patch('django_recaptcha.fields.client.submit')
+    def test_update_username_failed_duplicated_email(self, mocked_value):
+        mocked_value.return_value = RecaptchaResponse(is_valid=True)
+
+        data = self.profile_data
+        data['email'] = 'sa@gmail.com'
+        res = self.client.post(self.login_url, data=self.user_data)
+        res = self.client.post(self.url, data=data)
+        self.assertContains(res, 'کاربر با این ایمیل از قبل موجود است.')
+
+    @patch('django_recaptcha.fields.client.submit')
+    def test_update_username_failed_duplicated_number(self, mocked_value):
+        mocked_value.return_value = RecaptchaResponse(is_valid=True)
+
+        data = self.profile_data
+        data['number'] = '09123456788'
+        res = self.client.post(self.login_url, data=self.user_data)
+        res = self.client.post(self.url, data=data)
+        self.assertContains(res, 'کاربر با این شماره تلفن از قبل موجود است.')
