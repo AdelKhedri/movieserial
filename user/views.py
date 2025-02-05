@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import View
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from .models import Profile, User, ForgotPasswordLink
 from .forms import LoginForm, ProfileUpdateForm, RegisterForm, RecaptchaForm, ChangePasswordForgotPasswordFrom, UserForm
 from django.http import HttpResponse
@@ -10,6 +10,7 @@ from .otp import OtpCode
 from datetime import timedelta
 from django.utils import timezone
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse
 
 
 class LoginView(View):
@@ -222,6 +223,11 @@ class DashboardView(LoginRequiredMixin, View):
             self.context['user_form'] = user_ins
         return render(request, self.template_name, self.context)
 
+
+def logoutView(request):
+    if request.user.is_authenticated:
+        logout(request)
+    return redirect('user:login')
 
 def home(request):
     return HttpResponse(f'{request.user}')
