@@ -2,7 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import View
 from django.contrib.auth import authenticate, login, logout
 from .models import Profile, User, ForgotPasswordLink
-from .forms import LoginForm, ProfileUpdateForm, RegisterForm, RecaptchaForm, ChangePasswordForgotPasswordFrom, UserForm
+from .forms import (LoginForm, ProfileUpdateForm, RegisterForm, RecaptchaForm, ChangePasswordForgotPasswordFrom, UserForm,
+                    ChangePasswordForm)
 from django.http import HttpResponse
 from django.conf import settings
 from random import randint
@@ -222,6 +223,34 @@ class DashboardView(LoginRequiredMixin, View):
                 self.context['user_form_msg'] = 'user update success'
             self.context['user_form'] = user_ins
         return render(request, self.template_name, self.context)
+
+
+class ChangePasswordView(LoginRequiredMixin, View):
+    template_name = 'user/change-password.html'
+
+    def get(self, request, *args, **kwargs):
+        context = {
+            'change_password_form': ChangePasswordForm()
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        context = {
+            'change_password_form': ChangePasswordForm()
+        }
+
+        change_password_form = ChangePasswordForm(request.POST)
+        if change_password_form.is_valid():
+            last_password = change_password_form.cleaned_data['last_password']
+            user = authenticate(request, username=request.user.username, password=last_password)
+            if user is not None:
+                change_password_form.save(user=user)
+                context['msg'] = 'change_password success'
+                login(request, user)
+            else:
+                change_password_form.add_error('last_password', 'پسورد قبلی اشتباه است.')
+        context['change_password_form'] = change_password_form
+        return render(request, self.template_name, context)
 
 
 def logoutView(request):

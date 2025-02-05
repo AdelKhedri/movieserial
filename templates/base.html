@@ -208,30 +208,30 @@
                     <div class="profile-menu">
                         <ul class="nav nav-underline">
                             <li class="nav-item">
-                                <a href="{% url 'user:profile' %}" class="nav-link text-success" {% block my_account %}{% endblock %}>اکانت من</a>
+                                <a href="{% url 'user:profile' %}" class="nav-link {% block my_account %}"{% endblock %}>اکانت من</a>
                             </li>
                             <li class="nav-item">
-                                <a href="#" class="nav-link" {% block likes %} {% endblock %}>علاقه مندی</a>
+                                <a href="#" class="nav-link {% block likes %}" {% endblock %}>علاقه مندی</a>
                             </li>
                             <li class="nav-item">
-                                <a href="#" class="nav-link" {% block notification %} {% endblock %}>اعلانات <span
+                                <a href="#" class="nav-link {% block notification %}" {% endblock %}>اعلانات <span
                                     class="badge">۰۲</span></a>
                             </li>
                             <li class="nav-item">
-                                <a href="#" class="nav-link" {% block change_password %} {% endblock %}>تغییر پسورد</a>
+                                <a href="#" class="nav-link {% block change_password %}" {% endblock %}>تغییر پسورد</a>
                             </li>
                             <li class="nav-item">
                                 <a href="#" class="nav-link">افرایش موجودی</a>
                             </li>
-                            <li class="nav-item ms-auto" style="margin-right: auto;">
-                                <button class="nav-link" type="button"><i class="far fa-sign-out"></i>خروج</button>
+                            <li class="nav-item ms-auto">
+                                <a href="{% url 'user:logout' %}" class="nav-link"><i class="far fa-sign-out"></i>خروج</a>
                             </li>
                         </ul>
                     </div>
                 </div>
                 <div class="profile-menu-content">
                     <div class="tab-content" id="profile-pills-tabContent">
-                
+
                         {% block content %}  {% endblock %}
                         
                     </div>
