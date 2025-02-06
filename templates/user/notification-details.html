@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}جزیات اعلان | نت موی{% endblock %}
+{% block notification %}text-success" style="text-decoration: underline;"{% endblock %}
+
+{% block content %}
+<div class="tab-pane fade show active" aria-labelledby="pills-profile-tab3" tabindex="0">
+    <div class="profile-menu-info">
+        <div class="profile-notification">
+            {% if msg == 'notification was seen' %}
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <p>نوتیفیکیشن به حالت دیده شده تغییر یافت.</p>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endif %}
+            <h4 class="title">اعلان</h4>
+            <p>{{ object.message }}</p>
+            <hr>
+            <p>زمان: {{ object.time|date:'o/m/d H:i:s' }}</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -12,7 +12,7 @@ from datetime import timedelta
 from django.utils import timezone
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
-from django.views.generic.list import ListView
+from django.views.generic import ListView, DetailView
 
 
 class LoginView(View):
@@ -268,6 +268,28 @@ class NotificationView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context['notification_counts'] = self.get_queryset().filter(status='new').count()
         return context
+
+
+class NotificationDetailsView(LoginRequiredMixin, DetailView):
+    template_name = 'user/notification-details.html'
+    def get_queryset(self):
+        return Notification.objects.filter(user=self.request.user, pk=self.kwargs[self.pk_url_kwarg])
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        notif = self.get_queryset().first()
+        if notif.status == 'new':
+            notif.status = 'read'
+            notif.save()
+            context['msg'] = 'notification was seen'
+        return context
+
+
+class NotificationDeleteView(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        notif = get_object_or_404(Notification, user=request.user, pk=kwargs['pk'])
+        notif.delete()
+        return redirect(reverse('user:notification'))
 
 
 def logoutView(request):

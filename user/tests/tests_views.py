@@ -13,7 +13,7 @@ class BaseTestCase(TestCase):
     @patch('django_recaptcha.fields.client.submit')
     def setUp(self, mocked_value):
         mocked_value.return_value = RecaptchaResponse(is_valid=True)
-        self.user = User.objects.create(username='user')
+        self.user = User.objects.create(username='user', email='user@gmail.com', number='09123456789')
         self.user.set_password('password')
         self.user.is_active = True
         self.user.save()
@@ -408,3 +408,71 @@ class TestNotificationView(BaseTestCase):
         res = self.client.get(self.url)
         self.assertFalse(res.wsgi_request.user.is_authenticated)
         self.assertRedirects(res, reverse('user:login') + '?next=' + reverse('user:notification'))
+
+
+class NotifcationDetailView(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        Notification.objects.create(user=self.user, message='')
+        self.url = reverse('user:notification-details', kwargs={'pk': 1})
+
+    def test_url(self):
+        res = self.client.get(self.url)
+        self.assertEqual(res.status_code, 200)
+
+    def test_template_uesd(self):
+        res = self.client.get(self.url)
+        self.assertTemplateUsed(res, 'user/notification-details.html')
+
+    def test_seen_notification(self):
+        res = self.client.get(self.url)
+        self.assertContains(res, 'نوتیفیکیشن به حالت دیده شده تغییر یافت.')
+
+    def test_unduplicated_notfication_seen_message(self):
+        self.client.get(self.url)
+        res = self.client.get(self.url)
+        self.assertNotContains(res, 'نوتیفیکیشن به حالت دیده شده تغییر یافت.')
+
+    def test_redirect_anonymous_user(self):
+        self.client.get(reverse('user:logout'))
+        res = self.client.get(self.url)
+        self.assertEqual(res.status_code, 302)
+        self.assertRedirects(res ,reverse('user:login') + '?next=' + self.url)
+
+
+class TestNotifcationDeleteView(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        Notification.objects.create(user=self.user, message='sss')
+        user2 = User.objects.create(username='user2')
+        Notification.objects.create(user=user2, message='ssss')
+        self.url = reverse('user:notification-delete', kwargs={'pk': 1})
+        self.logout_url = reverse('user:logout')
+        self.notification_url = reverse('user:notification')
+
+    def test_url(self):
+        res = self.client.get(self.url)
+        self.assertEqual(res.status_code, 302)
+
+    def test_redirect_after_delete_notification(self):
+        notif = Notification.objects.create(user=self.user, message='ssf')
+        res = self.client.get(reverse('user:notification-delete', kwargs={'pk': notif.pk}))
+        self.assertEqual(res.status_code, 302)
+        self.assertRedirects(res, self.notification_url)
+
+    def test_delete_notification(self):
+        notif = Notification.objects.create(user=self.user, message='ssf')
+        res = self.client.get(reverse('user:notification-delete', kwargs={'pk': notif.pk}))
+        self.assertRedirects(res, reverse('user:notification'))
+        self.assertEqual(res.status_code, 302)
+
+        res = self.client.get(self.notification_url)
+        self.assertEqual(res.context['notification_list'].count(), 1)
+
+    def test_redirect_anonaymous_user(self):
+        self.client.get(reverse('user:logout'))
+        res = self.client.get(self.url)
+        self.assertEqual(res.status_code, 302)
+        notification_count = Notification.objects.all().count()
+        self.assertEqual(notification_count, 2)
+
