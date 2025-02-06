@@ -8,56 +8,58 @@ from freezegun import freeze_time
 from django.utils import timezone
 
 
-class TestLoginView(TestCase):
-    def setUp(self):
-        user = User.objects.create(username='user', number='09123456789')
-        user.set_password('password')
-        user.save()
+class BaseTestCase(TestCase):
 
-        self.url = reverse('user:login')
-        self.data = {
-            'username': 'test',
-            'password': 'test',
-            'g-recaptcha-response': 'mocked-captcha-response'
+    @patch('django_recaptcha.fields.client.submit')
+    def setUp(self, mocked_value):
+        mocked_value.return_value = RecaptchaResponse(is_valid=True)
+        self.user = User.objects.create(username='user')
+        self.user.set_password('password')
+        self.user.is_active = True
+        self.user.save()
+
+        self.user_data = {
+            'username': 'user',
+            'password': 'password',
+            'g-recaptcha-response': 'RESPONSE'
         }
+        self.login_url = reverse('user:login')
+        self.client.post(self.login_url, data=self.user_data)
+
+
+class TestLoginView(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.client.get(reverse('user:logout'))
 
     def test_url_exist(self):
-        res = self.client.get(self.url)
+        res = self.client.get(self.login_url)
         self.assertEqual(res.status_code, 200)
 
     def test_template(self):
-        res = self.client.get(self.url)
+        res = self.client.get(self.login_url)
         self.assertTemplateUsed(res, 'user/login.html')
 
     @patch('django_recaptcha.fields.client.submit')
     def test_fail_login_user_not_exist(self, mocked_value):
         mocked_value.return_value = RecaptchaResponse(is_valid=True)
-        res = self.client.post(self.url, data=self.data)
+        self.user_data['username'] = 'test'
+        res = self.client.post(self.login_url, data=self.user_data)
         self.assertContains(res, 'خطا: نام کاربری یا پسورد نادرست است.')
 
     def test_failed_login_recaptcha(self):
-        del self.data['g-recaptcha-response']
-        res = self.client.post(self.url, data=self.data)
+        del self.user_data['g-recaptcha-response']
+        res = self.client.post(self.login_url, data=self.user_data)
         self.assertContains(res, 'لطفا کپچا رو تایید کنید.')
 
-    # Error when recaptcha in form is active
-    # @patch('django_recaptcha.fields.client.submit')
-    # def test_login_success(self, mocked_value):
-    #     mocked_value.return_value = RecaptchaResponse(is_valid=True)
-    #     data = {
-    #         'username': 'user',
-    #         'password': 'password',
-    #         'g-recaptcha-response': 'mocked-captcha-response'
-    #     }
-
-    #     res = self.client.post(self.url, data=data)
-    #     print(res.content.decode('utf-8'))
-    #     self.assertEqual(User.objects.get(username='user').username, 'user')
-    #     self.assertEqual(res.wsgi_request.user.username, 'user')
+    @patch('django_recaptcha.fields.client.submit')
+    def test_login_success(self, mocked_value):
+        mocked_value.return_value = RecaptchaResponse(is_valid=True)
+        res = self.client.post(self.login_url, data=self.user_data)
+        self.assertEqual(res.wsgi_request.user.username, 'user')
 
 
 class TestRegisterView(TestCase):
-
     def setUp(self):
         user = User.objects.create(username = 'user')
         user.set_password('pass')
@@ -234,15 +236,13 @@ class TestForgotPasswordView(TestCase):
             self.assertContains(res, 'کد با موفقیت ارسال شد.')
 
 
-class TestForgotPasswordChangePasswordView(TestCase):
+class TestForgotPasswordChangePasswordView(BaseTestCase):
     def setUp(self):
-        user = User.objects.create(username = 'user')
-        user.set_password('pass')
-        user.save()
-        
-        forgot_password_link = str(ForgotPasswordLink.objects.create(user=user, time=timezone.now() + timedelta(minutes=5)).link)
+        super().setUp()
+        forgot_password_link = str(ForgotPasswordLink.objects.create(user=self.user, time=timezone.now() + timedelta(minutes=5)).link)
         self.link = forgot_password_link.replace(forgot_password_link[:4], '0000', 1)
         self.url = reverse('user:forgot-password-change-password', args=[forgot_password_link])
+        self.client.get(reverse('user:logout'))
 
     def test_url(self):
         res = self.client.get(self.url)
@@ -271,13 +271,9 @@ class TestForgotPasswordChangePasswordView(TestCase):
         self.assertEqual(res.status_code, 404)
 
 
-class TestProfileView(TestCase):
+class TestProfileView(BaseTestCase):
     def setUp(self):
-        self.user_data = {
-            'username': 'user',
-            'password': 'password',
-            'g-recaptcha-response': 'RESPONSE'
-        }
+        super().setUp()
         self.profile_data = {
             'username': 'user',
             'email': 'user@gmail.com',
@@ -287,91 +283,49 @@ class TestProfileView(TestCase):
             'about': ''
         }
         User.objects.create(username='user1', email='sa@gmail.com', number='09123456788')
-        user = User.objects.create(username='user', email='user@gmail.com', number='09123456789')
-        user.set_password('password')
-        user.is_active = True
-        user.save()
-
         self.url = reverse('user:profile')
-        self.login_url = reverse('user:login')
 
-
-    @patch('django_recaptcha.fields.client.submit')
-    def test_url(self, mocked_value):
-        mocked_value.return_value = RecaptchaResponse(is_valid=True)
-
-        res = self.client.post(self.login_url, data=self.user_data)
-        self.assertTrue(res.wsgi_request.user.is_authenticated)
+    def test_url(self):
         res = self.client.get(self.url)
         self.assertEqual(res.status_code, 200)
 
-    @patch('django_recaptcha.fields.client.submit')
-    def test_template_used(self, mocked_value):
-        mocked_value.return_value = RecaptchaResponse(is_valid=True)
-
-        res = self.client.post(self.login_url, data=self.user_data)
+    def test_template_used(self):
         res = self.client.get(self.url)
         self.assertTemplateUsed(res, 'user/profile.html')
 
-    @patch('django_recaptcha.fields.client.submit')
-    def test_update_username_success(self, mocked_value):
-        mocked_value.return_value = RecaptchaResponse(is_valid=True)
-
-        res = self.client.post(self.login_url, data=self.user_data)
+    def test_update_username_success(self):
         res = self.client.post(self.url, data=self.profile_data)
         self.assertContains(res, 'پروفایل با موفقیت آپدیت شد.')
 
-    @patch('django_recaptcha.fields.client.submit')
-    def test_update_username_failed_duplicated_username(self, mocked_value):
-        mocked_value.return_value = RecaptchaResponse(is_valid=True)
-
+    def test_update_username_failed_duplicated_username(self):
         data = self.profile_data
         data['username'] = 'user1'
-        res = self.client.post(self.login_url, data=self.user_data)
         res = self.client.post(self.url, data=data)
         self.assertContains(res, 'کاربر با این نام کاربری از قبل موجود است.')
 
-    @patch('django_recaptcha.fields.client.submit')
-    def test_update_username_failed_duplicated_email(self, mocked_value):
-        mocked_value.return_value = RecaptchaResponse(is_valid=True)
-
+    def test_update_username_failed_duplicated_email(self):
         data = self.profile_data
         data['email'] = 'sa@gmail.com'
-        res = self.client.post(self.login_url, data=self.user_data)
         res = self.client.post(self.url, data=data)
         self.assertContains(res, 'کاربر با این ایمیل از قبل موجود است.')
 
-    @patch('django_recaptcha.fields.client.submit')
-    def test_update_username_failed_duplicated_number(self, mocked_value):
-        mocked_value.return_value = RecaptchaResponse(is_valid=True)
-
+    def test_update_username_failed_duplicated_number(self):
         data = self.profile_data
         data['number'] = '09123456788'
-        res = self.client.post(self.login_url, data=self.user_data)
         res = self.client.post(self.url, data=data)
         self.assertContains(res, 'کاربر با این شماره تلفن از قبل موجود است.')
 
 
-class TestLogoutView(TestCase):
+class TestLogoutView(BaseTestCase):
     def setUp(self):
-        user = User.objects.create(username='user')
-        user.is_active = True
-        user.set_password('pass')
-        user.save()
-        self.data = {
-            'username': 'user',
-            'password': 'pass',
-            'g-recaptcha-response': 'RESPONSE',
-        }
-        
+        super().setUp()     
         self.url = reverse('user:logout')
-        self.login_url = reverse('user:login')
 
     @patch('django_recaptcha.fields.client.submit')
     def test_logout_success(self, mocked_value):
         mocked_value.return_value = RecaptchaResponse(is_valid=True)
         
-        res = self.client.post(self.login_url, data=self.data, follow=True)
+        res = self.client.post(self.login_url, data=self.user_data, follow=True)
         self.assertEqual(res.status_code, 200)
         self.assertTrue(res.wsgi_request.user.is_authenticated)
         
@@ -384,29 +338,15 @@ class TestLogoutView(TestCase):
         self.assertRedirects(res, reverse('user:login'))
 
 
-class TestChangePasswordView(TestCase):
-
-    @patch('django_recaptcha.fields.client.submit')
-    def setUp(self, mocked_value):
-        mocked_value.return_value = RecaptchaResponse(is_valid=True)
-
-        user = User.objects.create(username='user')
-        user.is_active = True
-        user.set_password('pass')
-        user.save()
-        self.data = {
-            'username': 'user',
-            'password': 'pass',
-            'g-recaptcha-response': 'RESPONSE',
-        }
+class TestChangePasswordView(BaseTestCase):
+    def setUp(self):
+        super().setUp()
         self.change_password_data = {
             'password1': 'new_pass',
             'password2': 'new_pass',
-            'last_password': 'pass',
+            'last_password': 'password',
         }
         self.url = reverse('user:change-password')
-        self.login_url = reverse('user:login')
-        self.client.post(self.login_url, data=self.data, follow=True)
 
     def test_url(self):
         res = self.client.get(self.url)
@@ -437,52 +377,31 @@ class TestChangePasswordView(TestCase):
         self.assertContains(res, 'لطفا موارد رو رعایت کنید.')
 
 
-class TestNotificationView(TestCase):
-
-    @patch('django_recaptcha.fields.client.submit')
-    def setUp(self, mocked_value):
-        mocked_value.return_value = RecaptchaResponse(is_valid=True)
-        
-        user = User.objects.create(username='user')
-        user.set_password('password')
-        user.is_active = True
-        user.save()
-
-        user_data = {
-            'username': 'user',
-            'password': 'password',
-            'g-recaptcha-response': 'RESPONSE'
-        }
-
+class TestNotificationView(BaseTestCase):
+    def setUp(self):
+        super().setUp()
         nots = []
         for counter in range(40):
-            nots.append(Notification(user=user, message='s'*150, status='read' if counter % 2 == 0 else 'new'))
+            nots.append(Notification(user=self.user, message='s'*150, status='read' if counter % 2 == 0 else 'new'))
         Notification.objects.bulk_create(nots)
-
         self.url = reverse('user:notification')
-        self.login_url = reverse('user:login')
 
-        self.client.post(self.login_url, data=user_data)
+        self.res = self.client.get(self.url)
 
     def test_url(self):
-        res = self.client.get(self.url)
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(self.res.status_code, 200)
 
     def test_template_used(self):
-        res = self.client.get(self.url)
-        self.assertTemplateUsed(res, 'user/notification.html')
+        self.assertTemplateUsed(self.res, 'user/notification.html')
 
     def test_get_own_notification(self):
-        res = self.client.get(self.url)
-        self.assertEqual(res.context['notification_counts'], 20)
+        self.assertEqual(self.res.context['notification_counts'], 20)
 
     def test_notification_pagination(self):
-        res = self.client.get(self.url)
-        self.assertEqual(res.context['page_obj'].paginator.num_pages, 4)        
+        self.assertEqual(self.res.context['page_obj'].paginator.num_pages, 4)        
 
     def test_truncatechars_filter(self):
-        res = self.client.get(self.url)
-        self.assertContains(res, 's' * 99 + '…')
+        self.assertContains(self.res, 's' * 99 + '…')
 
     def test_redirect_anonymoususer(self):
         self.client.get(reverse('user:logout'))
