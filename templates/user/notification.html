@@ -27,10 +27,10 @@
                             </td>
                             <td><span class="badge {% if notif.status == 'new' %}badge-danger">جدید{% else %}badge-success">خواندن{% endif %}</span></td>
                             <td>
-                                <a href="#"
+                                <a href="{% url 'user:notification-details' notif.pk %}"
                                     class="btn btn-sm btn-outline-secondary rounded-2"><i
                                         class="far fa-eye"></i></a>
-                                <a href="#"
+                                <a href="{% url 'user:notification-delete' notif.pk %}"
                                     class="btn btn-sm btn-outline-danger rounded-2 ms-1"><i
                                         class="far fa-trash-can"></i></a>
                             </td>
