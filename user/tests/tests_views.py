@@ -1,7 +1,7 @@
 from unittest.mock import patch
 from django_recaptcha.client import RecaptchaResponse
 from django.test import TestCase
-from ..models import User, ForgotPasswordLink
+from ..models import Notification, User, ForgotPasswordLink
 from django.urls import reverse
 from datetime import datetime, timedelta
 from freezegun import freeze_time
@@ -435,3 +435,57 @@ class TestChangePasswordView(TestCase):
             })
         res = self.client.post(self.url, data=self.change_password_data)
         self.assertContains(res, 'لطفا موارد رو رعایت کنید.')
+
+
+class TestNotificationView(TestCase):
+
+    @patch('django_recaptcha.fields.client.submit')
+    def setUp(self, mocked_value):
+        mocked_value.return_value = RecaptchaResponse(is_valid=True)
+        
+        user = User.objects.create(username='user')
+        user.set_password('password')
+        user.is_active = True
+        user.save()
+
+        user_data = {
+            'username': 'user',
+            'password': 'password',
+            'g-recaptcha-response': 'RESPONSE'
+        }
+
+        nots = []
+        for counter in range(40):
+            nots.append(Notification(user=user, message='s'*150, status='read' if counter % 2 == 0 else 'new'))
+        Notification.objects.bulk_create(nots)
+
+        self.url = reverse('user:notification')
+        self.login_url = reverse('user:login')
+
+        self.client.post(self.login_url, data=user_data)
+
+    def test_url(self):
+        res = self.client.get(self.url)
+        self.assertEqual(res.status_code, 200)
+
+    def test_template_used(self):
+        res = self.client.get(self.url)
+        self.assertTemplateUsed(res, 'user/notification.html')
+
+    def test_get_own_notification(self):
+        res = self.client.get(self.url)
+        self.assertEqual(res.context['notification_counts'], 20)
+
+    def test_notification_pagination(self):
+        res = self.client.get(self.url)
+        self.assertEqual(res.context['page_obj'].paginator.num_pages, 4)        
+
+    def test_truncatechars_filter(self):
+        res = self.client.get(self.url)
+        self.assertContains(res, 's' * 99 + '…')
+
+    def test_redirect_anonymoususer(self):
+        self.client.get(reverse('user:logout'))
+        res = self.client.get(self.url)
+        self.assertFalse(res.wsgi_request.user.is_authenticated)
+        self.assertRedirects(res, reverse('user:login') + '?next=' + reverse('user:notification'))

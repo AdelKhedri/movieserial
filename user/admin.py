@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Profile, User, ForgotPasswordLink
+from .models import Notification, Profile, User, ForgotPasswordLink
 from django.utils.html import format_html
 
 
@@ -14,6 +14,14 @@ class UserRegister(admin.ModelAdmin):
 class UserRegister(admin.ModelAdmin):
     list_display = [field.name for field in ForgotPasswordLink._meta.fields ]
     list_display_links = ['link']
+
+
+@admin.register(Notification)
+class NotificationRegister(admin.ModelAdmin):
+    list_display = [field.name for field in Notification._meta.fields ]
+    list_filter = ['status']
+    list_display_links = ['id', 'user']
+
 
 @admin.register(Profile)
 class Profileister(admin.ModelAdmin):

@@ -81,3 +81,20 @@ class Profile(models.Model):
 
     def __str__(self):
         return self.user.__str__()
+
+
+class Notification(models.Model):
+    status_list = (('read', 'خوانده'), ('new', 'جدید'))
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='کاربر')
+    message = models.TextField(verbose_name='پیام')
+    time = models.DateTimeField(auto_now_add=True, verbose_name='زمان')
+    status = models.CharField(choices=status_list, default='new', max_length=4, verbose_name='وضعیت')
+
+    class Meta:
+        verbose_name = 'اعلان'
+        verbose_name_plural = 'اعلانات'
+        ordering = ['time']
+
+
+    def __str__(self):
+        return self.user.__str__()

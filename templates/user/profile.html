@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
-
-{% block my_account %}style="text-decoration: underline;"{% endblock %}
+{% block title %}پروفایل | نت موی{% endblock %}
+{% block my_account %}text-success" style="text-decoration: underline;"{% endblock %}
 {% block content %}
 
 {% if profile_form_msg or user_form_msg %}
@@ -16,8 +16,7 @@
     {% endif %}
 </div>
 {% endif %}
-<div class="tab-pane fade show active" id="pills-profile1" role="tabpanel"
-    aria-labelledby="pills-profile-tab1" tabindex="0">
+<div class="tab-pane fade show active">
     <div class="row">
         <div class="col-lg-6">
             <div class="profile-menu-info">
