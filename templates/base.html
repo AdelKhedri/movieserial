@@ -214,11 +214,12 @@
                                 <a href="#" class="nav-link {% block likes %}" {% endblock %}>علاقه مندی</a>
                             </li>
                             <li class="nav-item">
-                                <a href="#" class="nav-link {% block notification %}" {% endblock %}>اعلانات <span
-                                    class="badge">۰۲</span></a>
+                                <a href="{% url 'user:notification' %}" class="nav-link {% block notification %}" {% endblock %}>اعلانات
+                                    {% if notification_counts > 0 %}<span class="badge">{{ notification_counts }}</span>{% endif %}
+                                </a>
                             </li>
                             <li class="nav-item">
-                                <a href="#" class="nav-link {% block change_password %}" {% endblock %}>تغییر پسورد</a>
+                                <a href="{% url 'user:change-password' %}" class="nav-link {% block change_password %}" {% endblock %}>تغییر پسورد</a>
                             </li>
                             <li class="nav-item">
                                 <a href="#" class="nav-link">افرایش موجودی</a>

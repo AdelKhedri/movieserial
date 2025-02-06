@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import View
 from django.contrib.auth import authenticate, login, logout
-from .models import Profile, User, ForgotPasswordLink
+from .models import Profile, User, ForgotPasswordLink, Notification
 from .forms import (LoginForm, ProfileUpdateForm, RegisterForm, RecaptchaForm, ChangePasswordForgotPasswordFrom, UserForm,
                     ChangePasswordForm)
 from django.http import HttpResponse
@@ -12,6 +12,7 @@ from datetime import timedelta
 from django.utils import timezone
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
+from django.views.generic.list import ListView
 
 
 class LoginView(View):
@@ -198,7 +199,8 @@ class DashboardView(LoginRequiredMixin, View):
             self.context = {
                 'profile_form': ProfileUpdateForm(instance=request.user.profile),
                 'user_form': UserForm(instance=request.user),
-                'user': request.user
+                'user': request.user,
+                'notification_counts': Notification.objects.filter(user=request.user, status='new').count()
             }
         return super().setup(request, *args, **kwargs)
 
@@ -228,29 +230,44 @@ class DashboardView(LoginRequiredMixin, View):
 class ChangePasswordView(LoginRequiredMixin, View):
     template_name = 'user/change-password.html'
 
-    def get(self, request, *args, **kwargs):
-        context = {
-            'change_password_form': ChangePasswordForm()
+    def setup(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            self.context = {
+            'change_password_form': ChangePasswordForm(),
+            'notification_counts': Notification.objects.filter(user=request.user, status='new').count()
         }
-        return render(request, self.template_name, context)
+        return super().setup(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name, self.context)
 
     def post(self, request, *args, **kwargs):
-        context = {
-            'change_password_form': ChangePasswordForm()
-        }
-
         change_password_form = ChangePasswordForm(request.POST)
         if change_password_form.is_valid():
             last_password = change_password_form.cleaned_data['last_password']
             user = authenticate(request, username=request.user.username, password=last_password)
             if user is not None:
                 change_password_form.save(user=user)
-                context['msg'] = 'change_password success'
+                self.context['msg'] = 'change_password success'
                 login(request, user)
             else:
                 change_password_form.add_error('last_password', 'پسورد قبلی اشتباه است.')
-        context['change_password_form'] = change_password_form
-        return render(request, self.template_name, context)
+        self.context['change_password_form'] = change_password_form
+        return render(request, self.template_name, self.context)
+
+
+class NotificationView(LoginRequiredMixin, ListView):
+    paginate_by = 10
+    template_name = 'user/notification.html'
+    context_object_name = 'notification_list'
+
+    def get_queryset(self):
+        return Notification.objects.filter(user=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['notification_counts'] = self.get_queryset().filter(status='new').count()
+        return context
 
 
 def logoutView(request):

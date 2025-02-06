@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}اعلانات | نت موی{% endblock %}
+{% block notification %}text-success" style="text-decoration: underline;"{% endblock %}
+
+{% block content %}
+<div class="tab-pane fade show active" aria-labelledby="pills-profile-tab3" tabindex="0">
+    <div class="profile-menu-info">
+        <div class="profile-notification">
+            <h4 class="title">اعلانات</h4>
+            <div class="table-responsive">
+                <table class="table table-borderless">
+                    <thead>
+                        <tr>
+                            <th>#شماره</th>
+                            <th>متن</th>
+                            <th>وضعیت</th>
+                            <th>عملکرد</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for notif in notification_list %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>
+                                <p>{{ notif.message|truncatechars:100 }}</p>
+                            </td>
+                            <td><span class="badge {% if notif.status == 'new' %}badge-danger">جدید{% else %}badge-success">خواندن{% endif %}</span></td>
+                            <td>
+                                <a href="#"
+                                    class="btn btn-sm btn-outline-secondary rounded-2"><i
+                                        class="far fa-eye"></i></a>
+                                <a href="#"
+                                    class="btn btn-sm btn-outline-danger rounded-2 ms-1"><i
+                                        class="far fa-trash-can"></i></a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% if not notification_list %}
+                <p class="text-center">شما اعلانی ندارید</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% if page_obj %}
+    <div class="pagination-area mt-40">
+        <div aria-label="Page navigation example">
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                        <span aria-hidden="true"><i class="fas fa-arrow-right"></i></span>
+                    </a>
+                </li>
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a></li>
+                {% endif %}
+                <li class="page-item active"><a class="page-link">{{ page_obj.number }}</a></li>
+                {% if page_obj.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a></li>
+                {% endif %}
+                <li class="page-item"><span class="page-link">...</span></li>
+                {% if page_obj.next_page_number != page_obj.paginator.num_pages %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a></li>
+                {% endif %}
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                        <span aria-hidden="true"><i class="fas fa-arrow-left"></i></span>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}
