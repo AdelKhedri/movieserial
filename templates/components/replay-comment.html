@@ -1,0 +1,27 @@
+{% load static %}
+{% for comment in comments %}
+<div style="margin-right: 40px;">
+    <div class="comment-item">
+        <div class="comment-img">
+            <img src="{% if comment.user.profile.picture %}{{ comment.user.profile.picture.url }}{% else %}{% static 'images/profile.jpeg' %}{% endif %}" alt="thumb">
+        </div>
+        <div class="comment-content">
+            <div class="comment-author">
+                <div class="author-info">
+                    <h5>{{ comment.user }}</h5>
+                    <span><i class="far fa-clock"></i>{{ comment.time|date:'G:i:s Y/n/j' }}</span>
+                </div>
+            </div>
+            <div class="comment-text">
+                <p>{{ comment.message|linebreaksbr }}</p>
+            </div>
+            <div class="comment-action">
+                <a onclick="replay({{ comment.id }}, '{{ comment.user }}')"><i class="far fa-reply"></i>پاسخ</a>
+            </div>
+        </div>
+    </div>
+    {% if comment.comment_set.exists %}
+    {% include 'components/replay-comment.html' with comments=comment.comment_set.all_accepted %}
+    {% endif %}
+</div>
+{% endfor %}
