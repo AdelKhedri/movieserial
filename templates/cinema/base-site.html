@@ -20,6 +20,8 @@
     <link rel="stylesheet" href="{% static 'css/animate.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/magnific-popup.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/owl.carousel.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/nice-select.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/plyr.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 
@@ -32,32 +34,9 @@
         </div>
     </div>
 
-
     {% include 'components/navbar.html' %}
 
-    <main class="main">
-
-        <div class="site-breadcrumb" style="background: url({% static 'images/01-bg-ganr.jpeg' %})">
-            <div class="container">
-                <h2 class="breadcrumb-title">{{ page_name }}</h2>
-                <ul class="breadcrumb-menu" dir="rtl">
-                    <li><a href="index.html">خانه</a></li>
-                    <li class="active">{{ page_name }}</li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="auth-area py-100" dir="rtl">
-            <div class="container">
-                <div class="col-md-5 col-lg-4 mx-auto">
-                    <div class="auth-wrap">
-                        {% block content %} {% endblock %}
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </main>
+    {% block content %} {% endblock %}
 
     {% include 'components/footer.html' %}
     <a href="#" id="scroll-top"><i class="far fa-arrow-up-from-arc"></i></a>

@@ -1,0 +1,239 @@
+{% extends 'cinema/base-site.html' %}
+{% load static %}
+{% block content %}
+    <main class="main">
+
+        <div class="movie-single py-80" dir="rtl">
+            <div class="container">
+                <div class="movie-single-wrap">
+
+
+                    <div class="movie-single-content mt-20">
+                        <div class="row">
+                            <div class="col-md-4 col-lg-3">
+                                <div class="movie-img">
+                                    <img src="{{ movie.baner.url }}" alt="">
+                                </div>
+                            </div>
+                            <div class="col-md-8 col-lg-6 border-end">
+                                <div class="movie-info">
+                                    <h4 class="movie-name">
+                                        {{ movie.persian_name }}
+                                        
+                                        <a href="{{ movie.trailer }}"
+                                        class="theme-btn popup-youtube"><span
+                                        class="fas fa-video"></span>تریلر</a>
+                                    </h4>
+                                    <p>{{ movie.english_name }}</p>
+                                    <p>
+                                        {{ movie.description|linebreaksbr }}
+                                    </p>
+                                    <div class="row mt-3">
+                                        <div class="col-md-6">
+                                            <div class="movie-info-item">
+                                                <strong>ژانر:</strong>
+                                                {% for gener in movie.geners.all %}
+                                                <a href="#">{{ gener.name }}</a>
+                                                {% if not forloop.last %}
+                                                <span class="mx-1">|</span>
+                                                {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                            <div class="movie-info-item">
+                                                <strong>کارگردان:</strong>
+                                                <a href="#">{{ movie.director }}</a>
+                                            </div>
+                                            <div class="movie-info-item">
+                                                <strong>بازیگران:</strong>
+                                                {% for star in movie.stars.all %}
+                                                <a href="#">{{ star.name }}</a>
+                                                {% if not forloop.last %}
+                                                <span class="mx-1">|</span>
+                                                {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                            <div class="movie-info-item">
+                                                <strong>کشور:</strong>
+                                                <a href="#">{{ movie.country }}</a>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="movie-info-item">
+                                                <strong>مدت زمان:</strong>
+                                                <span>{{ movie.duration|date:'G ساعت و i دقیقه' }}</span>
+                                            </div>
+                                            <div class="movie-info-item">
+                                                <strong>کیفیت:</strong>
+                                                <span class="quality">{{ movie.quality }}</span>
+                                            </div>
+                                            <div class="movie-info-item">
+                                                <strong>سال تولید:</strong>
+                                                <a href="#">{{ movie.year_create }}</a>
+                                            </div>
+                                            <div class="movie-info-item">
+                                                <a href="{{ movie.imdb_link }}"><img src="{% static 'images/imdb.png' %}" alt=""></a>:
+                                                <span class="rating">{{ movie.imdb_point }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-7 col-lg-3">
+                                <div class="movie-download">
+                                    <h5>دانلود:</h5>
+                                    {% for link in movie.links.all %}
+                                    <a href="{{ link.link }}" class="theme-btn" {% if link.size is not null %} title="{{ link.size|filesizeformat }}" {% endif %}>
+                                        <span class="fas fa-arrow-down-to-arc"></span>
+                                        دانلود: {{ link.quality }}
+                                    </a>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="movie-keyword">
+                                    <span>کلمه کلیدی :</span>
+                                    <a href="#">مشاهده</a>
+                                    <a href="#">استریم</a>
+                                    <a href="#">اکشن</a>
+                                    <a href="#">۲۰۲۳</a>
+                                    <a href="#">دانود اچ دی</a>
+                                    <a href="#">جنایی</a>
+                                    <a href="#">دران</a>
+                                    <a href="#">فیلم اچ دی</a>
+                                    <a href="#">استریم اچ دی</a>
+                                    <a href="#">فیلم جدید</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="movie-area pb-80" dir="rtl">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="site-heading-inline">
+                                        <h2 class="site-title">شما ممکن دوست داشته باشید</h2>
+                                        <a href="#" class="theme-btn">مشاهده همه<i class="far fa-angles-left"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="sw-2" dir="ltr">
+            
+                                <div class="season-content">
+                                    
+                                    <div class="movie-slider owl-carousel owl-theme">
+                                        {% for related_movie in movie.related_movies.all|slice:"10" %}
+                                        <div class="movie-item">
+                                            <div class="movie-img">
+                                                <img src="{{ related_movie.baner.url }}" alt="">
+                                                <a href="{% url 'movie:details' related_movie.slug %}" class="movie-play"><i class="icon-play-4"></i></a>
+                                            </div>
+                                            <div class="movie-content" dir="rtl">
+                                                <h6 class="movie-title"><a href="#">{{ related_movie.persian_name }}</a></h6>
+                                                <div class="movie-info">
+                                                    <span class="movie-season">{{ related_movie.duration|date:'G ساعت و i دقیقه' }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% if msg == 'send comment success' %}
+                        <div class="alert alert-success">
+                            <p>نظر شما با موفقیت ثبت شد و پس از تایید نمایش داده میشود</p>
+                        </div>
+                    {% endif %}
+                    
+                    
+                    <div class="movie-comment mt-50">
+                        <ul class="nav nav-underline mb-3" id="movieComment-tab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="movieComment-tab1" data-bs-toggle="pill"
+                                    data-bs-target="#pills-movieComment1" type="button" role="tab"
+                                    aria-controls="pills-movieComment1" aria-selected="true">دیدگاه ها
+                                    <span>{{ comment_count }}</span></button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="movieComment-tab2" data-bs-toggle="pill"
+                                    data-bs-target="#pills-movieComment2" type="button" role="tab"
+                                    aria-controls="pills-movieComment2" aria-selected="false">بازدید
+                                    <span>۰۸</span></button>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="movieComment-tabContent">
+                            <div class="tab-pane fade show active" id="pills-movieComment1" role="tabpanel"
+                                aria-labelledby="movieComment-tab1" tabindex="0">
+                                <div class="movie-comment-wrap">
+                                    {% if request.user.is_authenticated %}
+                                    <div class="comment-form">
+                                        <h4>ارسال دیدگاه</h4>
+                                        <form method="post">
+                                            {% csrf_token %}
+                                            <p id="replay-warning" class="text-warning p-1 d-none">درحال پاسخ به: <span class="text-info" id="replay-username">USERNAME</span></p>
+                                            {{ comment_form.parent }}
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        {{ comment_form.message }}
+                                                    </div>
+                                                    <button type="submit" class="theme-btn">دیدگاه پست<i class="far fa-paper-plane"></i></button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    {% endif %}
+
+                                    <div class="comment-list">
+                                        {% for comment in comments %}
+                                        <div>
+                                            <div class="comment-item">
+                                                <div class="comment-img">
+                                                    <img src="{% if comment.user.profile.picture %}{{ comment.user.profile.picture.url }}{% else %}{% static 'images/profile.jpeg' %}{% endif %}" alt="thumb">
+                                                </div>
+                                                <div class="comment-content">
+                                                    <div class="comment-author">
+                                                        <div class="author-info">
+                                                            <h5>{{ comment.user }}</h5>
+                                                            <span><i class="far fa-clock"></i>{{ comment.time|date:'G:i:s Y/n/j' }}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="comment-text">
+                                                        <p>{{ comment.message|linebreaksbr }}</p>
+                                                    </div>
+                                                    <div class="comment-action">
+                                                        <a onclick="replay({{ comment.id }}, '{{ comment.user }}')"><i class="far fa-reply"></i>پاسخ</a>
+                                                        <!-- <a href="#"><i class="far fa-thumbs-up"></i>۲.۵ هزار</a>
+                                                        <a href="#"><i class="far fa-thumbs-down"></i>۱.۲ هزار</a> -->
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% if comment.comment_set.exists %}
+                                            {% include 'components/replay-comment.html' with comments=comment.comment_set.all_accepted %}
+                                            {% endif %}
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    
+                                </div>
+                                <script>
+                                    function replay(target_id, tatget_name){
+                                        let replay_id = document.getElementById('id_parent').value = target_id;
+                                        document.getElementById('replay-username').innerText = tatget_name;
+                                        document.getElementById('replay-warning').classList.add('d-inline');
+                                        document.getElementById('replay-warning').classList.remove('d-none');
+                                    }
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+    </main>
+{% endblock %}
