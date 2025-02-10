@@ -3,8 +3,14 @@ from django.views.generic import View
 from django.utils import timezone
 from django.db.models import Q
 from django.core.paginator import Paginator
-from .models import Movie, Comment
+from .models import Country, Movie, Comment, Geners
 from .forms import CommentForm
+from .filters import MovieFilter
+
+
+def paginate_objects(resutl, per_page, page):
+    pagintor = Paginator(resutl, per_page)
+    return pagintor.get_page(page)
 
 
 class MovieDetailsView(View):
@@ -19,6 +25,8 @@ class MovieDetailsView(View):
         self.context = {
             'movie': self.movie,
             'comments': comments,
+            'gener_list': Geners.objects.all(),
+            'country_list': Country.objects.all(),
             'comment_count': comment_count,
             'comment_form': CommentForm(),
         }
@@ -43,3 +51,21 @@ class MovieDetailsView(View):
             else:
                 self.context['comment_form'] = comment_form
         return render(request, self.template_name, self.context)
+
+
+class FilterMovieView(View):
+    template_name = 'cinema/movies-filter.html'
+
+    def get(self, request, *args, **kwargs):
+        movies = Movie.objects.all()
+        filters = MovieFilter(request.GET, movies)
+        page = request.GET.get('page', None)
+
+        context = {
+            'page_title': 'فیلتر فیلم ها',
+            'gener_list': Geners.objects.all(),
+            'country_list': Country.objects.all(),
+            'movies': paginate_objects(filters.qs, 15, page),
+            'filters': filters
+        }
+        return render(request, self.template_name, context)

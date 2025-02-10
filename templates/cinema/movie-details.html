@@ -41,7 +41,7 @@
                                             </div>
                                             <div class="movie-info-item">
                                                 <strong>کارگردان:</strong>
-                                                <a href="#">{{ movie.director }}</a>
+                                                <a href="#">{{ movie.director|default:'' }}</a>
                                             </div>
                                             <div class="movie-info-item">
                                                 <strong>بازیگران:</strong>
@@ -54,7 +54,12 @@
                                             </div>
                                             <div class="movie-info-item">
                                                 <strong>کشور:</strong>
-                                                <a href="#">{{ movie.country }}</a>
+                                                {% for country in movie.country.all %}
+                                                    <a href="#">{{ country }}</a>
+                                                    {% if not forloop.last %}
+                                                    <span class="mx-1">|</span>
+                                                    {% endif %}
+                                                {% endfor %}
                                             </div>
                                         </div>
                                         <div class="col-md-6">
@@ -64,7 +69,7 @@
                                             </div>
                                             <div class="movie-info-item">
                                                 <strong>کیفیت:</strong>
-                                                <span class="quality">{{ movie.quality }}</span>
+                                                <span class="quality">{{ movie.get_quality_display }}</span>
                                             </div>
                                             <div class="movie-info-item">
                                                 <strong>سال تولید:</strong>

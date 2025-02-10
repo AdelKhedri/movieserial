@@ -1,0 +1,199 @@
+{% extends 'cinema/base-site.html' %}
+{% load static %}
+{% block title %}جست و جو در فیلم ها {% endblock %}
+{% block content %}
+
+    <main class="main">
+        <div class="site-breadcrumb" style="background: url({% static 'images/01-bg-ganr.jpeg' %})">
+            <div class="container">
+                <h2 class="breadcrumb-title">جست و جو در فیلم ها</h2>
+                <ul class="breadcrumb-menu" dir="rtl">
+                    <li><a href="/">خانه</a></li>
+                    <li class="active">{{ page_title }}</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="filter-area" dir="rtl">
+            <div class="container">
+                <form method="get" class="row g-4 align-items-center">
+                    <div class="col-lg-3">
+                        <div class="filter-search">
+                            <div class="form-group">
+                                {{ filters.form.persian_name }}
+                                <!-- <input type="text" class="form-control" placeholder="نام فیلم را وارد نمایید . . ."> -->
+                                <button type="submit"><i class="icon-search"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-7">
+                        <div class="filter-content">
+                                <div class="filter-sort">
+                                    <!-- <div class="filter-select">
+                                        <select class="select">
+                                            <option value="">نوع</option>
+                                            <option value="1">همه</option>
+                                            <option value="2">فیلم</option>
+                                            <option value="3">سریال</option>
+                                        </select>
+                                    </div>
+                                    <div class="filter-select">
+                                        <select class="select">
+                                            <option value="">کیفیت</option>
+                                            <option value="1">همه</option>
+                                            <option value="2">اچ دی</option>
+                                            <option value="3">اس دی</option>
+                                            <option value="4">تی اس</option>
+                                            <option value="5">پرده سینما</option>
+                                            <option value="6">دی وی دی</option>
+                                        </select>
+                                    </div>
+                                    <div class="filter-select">
+                                        <select class="select">
+                                            <option value="">امتیاز</option>
+                                            <option value="1">همه</option>
+                                            <option value="2">بین ۹-۱۰</option>
+                                            <option value="3">بین ۸-۹</option>
+                                            <option value="4">بین ۷-۸</option>
+                                            <option value="5">بین ۶-۷</option>
+                                            <option value="6">بین ۴-۶</option>
+                                        </select>
+                                    </div> -->
+                                    {% for field in filters.form %}
+                                    {% if field.field.widget.input_type == 'select' %}
+                                    <div class="filter-select">
+                                        <div class="filter-select col">
+                                            {{ field }}
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    {% endfor %}
+                                </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="filter-btn text-end ">
+                            <button type="submit" class="btn btn-warning"><span class="fas fa-search"></span></button>
+                            <button type="button" class="theme-btn" data-bs-toggle="collapse"
+                                data-bs-target="#collapseFilter" aria-expanded="false"
+                                aria-controls="collapseFilter"><span class="fas fa-sort"></span>فیلتر</button>
+                        </div>
+                    </div>
+                </form>
+                <div class="col-lg-12">
+                    <div class="filter-full-wrap">
+                        <div class="collapse" id="collapseFilter">
+                            <div class="filter-full-content">
+                                <form method="get">
+                                    <div class="filter-search row row-cols-1 row-cols-md-2 row-cols-lg-3 g-2">
+                                        {% for field in filters.form %}
+                                            {% if field.field.widget.input_type == 'select' %}
+                                            <div class="filter-select col">
+                                                {{ field.as_field_group }}
+                                            </div>
+
+                                            {% elif field.field.widget.input_type not in 'checkbox' %}
+                                            <div class="col">
+                                                {{ field.as_field_group }}
+                                            </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+
+                                    {% for field in filters.form %}
+                                        <div class="row mt-1">
+                                        {% if field.field.widget.input_type == 'checkbox' %}
+                                        <div class="filter-item-content">
+                                            <div id="id_{{ field.name }}" class="form-check form-check-inline">
+                                                {{ field.label }}:
+                                                <br>
+                                                {% for value, label in field.field.choices %}
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="checkbox" name="{{ field.name }}"
+                                                    id="id_{{ field.name }}_{{ value }}" value="{{ value }}">
+                                                    <label class="form-check-label" for="id_{{ field.name }}_{{ value }}">{{ label }}</label>
+                                                </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                        </div>
+                                    {% endfor %}
+
+                                    <button type="submit" class="theme-btn"><span class="fas fa-sort"></span>فیلتر کن</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="movie-area py-80" dir="rtl">
+            <div class="container">
+                <div class="row row-cols-xl-5">
+                    {% for movie in movies %}
+                    <div class="col-6 col-md-4 col-lg-3 col-xl">
+                        <div class="movie-item">
+                            <span class="movie-quality">{{ movie.get_quality_display }}</span>
+                            <div class="movie-img">
+                                <img src="{{ movie.baner.url }}" alt="">
+                                <a href="{% url 'movie:details' movie.slug %}" class="movie-play"><i class="icon-play-3"></i></a>
+                            </div>
+                            <div class="movie-content">
+                                <h6 class="movie-title"><a href="{% url 'movie:details' movie.id %}">{{ movie.persian_name }}</a></h6>
+                                <div class="movie-info">
+                                    <span class="movie-time">{{ movie.time|date:'G ساعت و i دقیقه' }}</span>
+                                    <div class="movie-genre">
+                                        {% for gener in movie.geners.all %}
+                                        <a href="#">{{ gener }}</a>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="pagination-area mt-30">
+                    <div aria-label="Page navigation example">
+                        <ul class="pagination">
+                            <li class="page-item">
+                                <a class="page-link" 
+                                {% if movies.has_previous %}
+                                href="?page={{ movies.previous_page_number }}" 
+                                {% else %} disabled {% endif %}aria-label="Previous">
+                                    <span aria-hidden="true"><i class="fas fa-arrow-right"></i></span>
+                                </a>
+                            </li>
+                            {% if movies.has_previous and movies.previous_page_number > 0 %}
+                            <li class="page-item "><a class="page-link" href="">۱</a></li>
+                            {% endif %}
+                            <li class="page-item active"><a class="page-link" disabled>{{ movies.number }}</a></li>
+                            <!-- <li class="page-item"><span class="page-link"></span></li> -->
+                            {% if movies.has_next and movies.next_page_number < movies.paginator.num_pages|add:1 %}
+                            <li class="page-item"><a class="page-link" href="?page={{ movies.paginator.num_pages }}">{{ movies.paginator.num_pages }}</a></li>
+                            {% endif %}
+                            <li class="page-item">
+                                <a class="page-link" 
+                                {% if movies.has_next %}
+                                href="?page={{ movies.next_page_number }}" 
+                                {% else %}
+                                disabled
+                                {% endif %}
+                                aria-label="Next">
+                                    <span aria-hidden="true"><i class="fas fa-arrow-left"></i></span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+{% endblock %}
