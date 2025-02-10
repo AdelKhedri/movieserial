@@ -23,6 +23,15 @@
                                         <a href="{{ movie.trailer }}"
                                         class="theme-btn popup-youtube"><span
                                         class="fas fa-video"></span>تریلر</a>
+                                        <a href="{% url 'movie:toggle-bookmark-movie' movie.slug %}" 
+                                        {% if request.user.is_authenticated and bookmark %}
+                                        class="btn btn-success">
+                                        ذخیره شده
+                                        {% else %}
+                                        class="btn btn-warning">
+                                        ذخیره نشده
+                                        {% endif %}
+                                        </a>
                                     </h4>
                                     <p>{{ movie.english_name }}</p>
                                     <p>

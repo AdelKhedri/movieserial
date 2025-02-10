@@ -1,9 +1,10 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
 from django.views.generic import View
 from django.utils import timezone
 from django.db.models import Q
 from django.core.paginator import Paginator
-from .models import Country, Movie, Comment, Geners
+from .models import Country, MediaBookmark, Movie, Comment, Geners
 from .forms import CommentForm
 from .filters import MovieFilter
 
@@ -20,6 +21,7 @@ class MovieDetailsView(View):
         self.movie = get_object_or_404(Movie, Q(release_date__gte=timezone.now()) | Q(release_date__isnull=True), **kwargs)
         comment_count = Comment.objects.filter(accepted=True, media_type='movie', media_id=self.movie.id).count()
         comments = Comment.objects.filter(parent__isnull=True, accepted=True, media_type='movie', media_id=self.movie.id)
+        is_bookmarked = MediaBookmark.objects.filter(user=request.user, media_type='movie', media_id=self.movie.pk).exists()
         # TODO: show Pending comments for sender 
 
         self.context = {
@@ -28,6 +30,7 @@ class MovieDetailsView(View):
             'gener_list': Geners.objects.all(),
             'country_list': Country.objects.all(),
             'comment_count': comment_count,
+            'bookmark': is_bookmarked,
             'comment_form': CommentForm(),
         }
         return super().setup(request, *args, **kwargs)
@@ -69,3 +72,11 @@ class FilterMovieView(View):
             'filters': filters
         }
         return render(request, self.template_name, context)
+
+
+class ToggleBookmarkMovieView(View):
+    def get(self, request, *args, **kwargs):
+        movie = get_object_or_404(Movie, slug=kwargs['slug'])
+        bookmark, result = MediaBookmark.objects.get_or_create(user=request.user, media_type='movie', media_id=movie.pk)
+        if not result: bookmark.delete()
+        return redirect(reverse('movie:details', kwargs={'slug': movie.slug}))

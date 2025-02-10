@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Movie, Geners, DownloadLink, Agents, Comment, Country
+from .models import Movie, Geners, DownloadLink, Agents, Comment, Country, MediaBookmark
 from django.utils.html import format_html
 
 
@@ -64,3 +64,8 @@ class AgentsRegister(admin.ModelAdmin):
 @admin.register(Country)
 class CountryRegister(admin.ModelAdmin):
     list_display = [field.name for field in Country._meta.fields]
+
+
+@admin.register(MediaBookmark)
+class CountryRegister(admin.ModelAdmin):
+    list_display = [field.name for field in MediaBookmark._meta.fields] + ['get_media_object']

@@ -154,3 +154,24 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.user.__str__()
+
+
+class MediaBookmark(models.Model):
+    media_types = (('movie', 'فیلم'), ('serial', 'سریال'))
+    media_type = models.CharField(max_length=6, choices=media_types, verbose_name='فلیم/سریال')
+    media_id = models.IntegerField(verbose_name='ایدی مدیا')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='کاربر')
+
+    class Meta:
+        verbose_name = 'میدیای ذخیره شده'
+        verbose_name_plural = 'مدیا های ذخیره شده'
+
+    def get_media_object(self):
+        try:
+            return Movie.objects.get(id=self.media_id) if self.media_type == 'movie' else ''
+        except:
+            pass
+
+    def __str__(self):
+        print(self.get_media_object())
+        return self.get_media_object().__str__() if isinstance(self.get_media_object(), Movie) else self.media_type
