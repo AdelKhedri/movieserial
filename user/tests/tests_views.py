@@ -1,11 +1,14 @@
 from unittest.mock import patch
 from django_recaptcha.client import RecaptchaResponse
 from django.test import TestCase
+from django.core.files.uploadedfile import SimpleUploadedFile
+from cinema.models import Movie
 from ..models import Notification, User, ForgotPasswordLink
 from django.urls import reverse
 from datetime import datetime, timedelta
 from freezegun import freeze_time
 from django.utils import timezone
+import os
 
 
 class BaseTestCase(TestCase):
@@ -476,3 +479,36 @@ class TestNotifcationDeleteView(BaseTestCase):
         notification_count = Notification.objects.all().count()
         self.assertEqual(notification_count, 2)
 
+
+class TestBookmarkView(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.url = reverse('user:user-bookmarks')
+        self.poster = SimpleUploadedFile(
+            name = 'test.jpg',
+            content = b'',
+            content_type = 'image/jpeg'
+        )
+        Movie.objects.create(
+            persian_name = 'ss',
+            english_name = 'ss',
+            year_create = 2022,
+            slug = 'sss',
+            imdb_point = 2.5,
+            baner = self.poster,
+        )
+
+    def test_url(self):
+        res = self.client.get(self.url)
+        self.assertEqual(res.status_code, 200)
+
+    def test_template_used(self):
+        res = self.client.get(self.url)
+        self.assertTemplateUsed(res, 'user/bookmark.html')
+
+    def test_pagination_template_included(self):
+        res = self.client.get(self.url)
+        self.assertTemplateUsed(res, 'components/pagination.html')
+
+    def tearDown(self):
+        os.remove('media/images/movies/test.jpg')

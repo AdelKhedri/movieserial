@@ -99,36 +99,3 @@ class Notification(models.Model):
     def __str__(self):
         return self.user.__str__()
 
-
-class Package(models.Model):
-    title = models.CharField(max_length=150, verbose_name='موضوع')
-    description = models.TextField(blank=True, verbose_name='توضیحات')
-    picture = models.ImageField(blank=True, verbose_name='عکس')
-    price = models.IntegerField(verbose_name='قیمت')
-    days = models.IntegerField(verbose_name='روز ها')
-    tax = models.IntegerField(default=0, verbose_name='مالیات')
-    discount = models.IntegerField(blank=True, verbose_name='تخفیف')
-
-    def get_final_price(self):
-        return self.price + self.tax - self.discount
-
-    class Meta:
-        verbose_name = 'پکیج'
-        verbose_name_plural = 'پکیج ها'
-
-    def __str__(self):
-        return self.title
-
-
-class HistoryOfBuyPackage(models.Model):
-    package = models.ForeignKey(Package, on_delete=models.CASCADE, verbose_name='پکیج')
-    time = models.DateTimeField(auto_now_add=True, verbose_name='زمان')
-    payed = models.BooleanField(default=False, verbose_name='وضعیت پرداخت')
-    final_price = models.IntegerField(verbose_name='قیمت نهایی')
-
-    class Meta:
-        verbose_name = 'سابقه پکیج'
-        verbose_name_plural = 'سابقه پکیج ها'
-
-    def __str__(self):
-        return self.package.__str__()

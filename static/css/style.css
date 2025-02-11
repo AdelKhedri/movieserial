@@ -159,7 +159,23 @@ Table of contents
 }
 
 
-
+.card {
+  --bs-card-border-color: var(--bs-border-color-translucent);
+  --bs-card-border-radius: var(--bs-border-radius);
+  --bs-card-border-width: var(--bs-border-width);
+  --bs-card-height: ;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  height: var(--bs-card-height);
+  color: var(--heading-color);
+  word-wrap: break-word;
+  background-color: var(--theme-bg);
+  background-clip: border-box;
+  border: var(--bs-card-border-width) solid var(--bs-card-border-color);
+  border-radius: var(--bs-card-border-radius);
+}
 /*====================
 3. General css
 ======================*/
@@ -2066,6 +2082,19 @@ label {
   line-height: 1;
   box-shadow: var(--box-shadow);
   z-index: 2;
+}
+
+.movie-item .movie-dislike {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  font-size: 20px;
+  font-weight: 500;
+  border-radius: 6px;
+  padding: 6px 9px 6px 9px;
+  line-height: 1;
+  background-color: var(--theme-color2);
 }
 
 .movie-item .movie-episode{

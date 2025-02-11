@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import View
 from django.contrib.auth import authenticate, login, logout
+
+from cinema.models import Country, Geners, MediaBookmark
 from .models import Profile, User, ForgotPasswordLink, Notification
 from .forms import (LoginForm, ProfileUpdateForm, RegisterForm, RecaptchaForm, ChangePasswordForgotPasswordFrom, UserForm,
                     ChangePasswordForm)
@@ -290,6 +292,23 @@ class NotificationDeleteView(LoginRequiredMixin, View):
         notif = get_object_or_404(Notification, user=request.user, pk=kwargs['pk'])
         notif.delete()
         return redirect(reverse('user:notification'))
+
+
+class BookmarkView(LoginRequiredMixin, ListView):
+    template_name = 'user/bookmark.html'
+    paginate_by = 1
+    context_object_name = 'media_list'
+    
+    def get_queryset(self):
+        return MediaBookmark.objects.filter(user=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'gener_list': Geners.objects.all(),
+            'country_list': Country.objects.all(),
+        })
+        return context
 
 
 def logoutView(request):

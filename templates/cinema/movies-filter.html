@@ -157,39 +157,7 @@
                     {% endfor %}
                 </div>
 
-                <div class="pagination-area mt-30">
-                    <div aria-label="Page navigation example">
-                        <ul class="pagination">
-                            <li class="page-item">
-                                <a class="page-link" 
-                                {% if movies.has_previous %}
-                                href="?page={{ movies.previous_page_number }}" 
-                                {% else %} disabled {% endif %}aria-label="Previous">
-                                    <span aria-hidden="true"><i class="fas fa-arrow-right"></i></span>
-                                </a>
-                            </li>
-                            {% if movies.has_previous and movies.previous_page_number > 0 %}
-                            <li class="page-item "><a class="page-link" href="">۱</a></li>
-                            {% endif %}
-                            <li class="page-item active"><a class="page-link" disabled>{{ movies.number }}</a></li>
-                            <!-- <li class="page-item"><span class="page-link"></span></li> -->
-                            {% if movies.has_next and movies.next_page_number < movies.paginator.num_pages|add:1 %}
-                            <li class="page-item"><a class="page-link" href="?page={{ movies.paginator.num_pages }}">{{ movies.paginator.num_pages }}</a></li>
-                            {% endif %}
-                            <li class="page-item">
-                                <a class="page-link" 
-                                {% if movies.has_next %}
-                                href="?page={{ movies.next_page_number }}" 
-                                {% else %}
-                                disabled
-                                {% endif %}
-                                aria-label="Next">
-                                    <span aria-hidden="true"><i class="fas fa-arrow-left"></i></span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+                {% include 'components/pagination.html' with object=movies %}
 
             </div>
         </div>

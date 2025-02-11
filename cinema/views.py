@@ -21,7 +21,7 @@ class MovieDetailsView(View):
         self.movie = get_object_or_404(Movie, Q(release_date__gte=timezone.now()) | Q(release_date__isnull=True), **kwargs)
         comment_count = Comment.objects.filter(accepted=True, media_type='movie', media_id=self.movie.id).count()
         comments = Comment.objects.filter(parent__isnull=True, accepted=True, media_type='movie', media_id=self.movie.id)
-        is_bookmarked = MediaBookmark.objects.filter(user=request.user, media_type='movie', media_id=self.movie.pk).exists()
+        is_bookmarked = MediaBookmark.objects.filter(user=request.user, media_type='movie', media_id=self.movie.pk).exists() if request.user.is_authenticated else False
         # TODO: show Pending comments for sender 
 
         self.context = {
@@ -79,4 +79,6 @@ class ToggleBookmarkMovieView(View):
         movie = get_object_or_404(Movie, slug=kwargs['slug'])
         bookmark, result = MediaBookmark.objects.get_or_create(user=request.user, media_type='movie', media_id=movie.pk)
         if not result: bookmark.delete()
-        return redirect(reverse('movie:details', kwargs={'slug': movie.slug}))
+        next_url = request.GET.get('next', None)
+        next_page = next_url if next_url and next_url != reverse('movie:toggle-bookmark-movie', kwargs={'slug': movie.slug}) else None
+        return redirect(next_page) if next_page else redirect(reverse('movie:details', kwargs={'slug': movie.slug}))
