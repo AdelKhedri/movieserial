@@ -1,0 +1,119 @@
+{% load static %}
+<div class="movie-single-content mt-20">
+    <div class="row">
+        <div class="col-md-4 col-lg-3">
+            <div class="movie-img">
+                <img src="{{ media.baner.url }}" alt="">
+            </div>
+        </div>
+        <div class="col-md-8 col-lg-6 border-end">
+            <div class="movie-info">
+                <h4 class="movie-name">
+                    {{ media.persian_name }}
+
+                    <a href="{{ media.trailer }}"
+                    class="theme-btn popup-youtube"><span
+                    class="fas fa-video"></span>تریلر</a>
+                    <a href="{% url 'media:toggle-bookmark-movie' media.slug %}" 
+                    {% if request.user.is_authenticated and bookmark %}
+                    class="btn btn-success">
+                    ذخیره شده
+                    {% else %}
+                    class="btn btn-warning">
+                    ذخیره نشده
+                    {% endif %}
+                    </a>
+                </h4>
+                <p>{{ media.english_name }}</p>
+                <p>
+                    {{ media.description|linebreaksbr }}
+                </p>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <div class="movie-info-item">
+                            <strong>ژانر:</strong>
+                            {% for gener in media.geners.all %}
+                            <a href="#">{{ gener.name }}</a>
+                            {% if not forloop.last %}
+                            <span class="mx-1">|</span>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                        <div class="movie-info-item">
+                            <strong>کارگردان:</strong>
+                            <a href="#">{{ media.director|default:'' }}</a>
+                        </div>
+                        <div class="movie-info-item">
+                            <strong>بازیگران:</strong>
+                            {% for star in media.stars.all %}
+                            <a href="#">{{ star.name }}</a>
+                            {% if not forloop.last %}
+                            <span class="mx-1">|</span>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                        <div class="movie-info-item">
+                            <strong>کشور:</strong>
+                            {% for country in media.countrys.all %}
+                                <a href="#">{{ country }}</a>
+                                {% if not forloop.last %}
+                                <span class="mx-1">|</span>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        {% if media_type == 'movie' %}
+                        <div class="movie-info-item">
+                            <strong>مدت زمان:</strong>
+                            <span>{{ media.duration|date:'G ساعت و i دقیقه' }}</span>
+                        </div>
+                        {% endif %}
+                        <div class="movie-info-item">
+                            <strong>کیفیت:</strong>
+                            <span class="quality">{{ media.get_quality_display }}</span>
+                        </div>
+                        <div class="movie-info-item">
+                            <strong>سال تولید:</strong>
+                            <a href="#">{{ media.year_create }}</a>
+                        </div>
+                        <div class="movie-info-item">
+                            <a href="{{ media.imdb_link }}"><img src="{% static 'images/imdb.png' %}" alt=""></a>:
+                            <span class="rating">{{ media.imdb_point }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-7 col-lg-3">
+            <div class="movie-download">
+                {% if media_type == 'movie' %}
+                <h5>دانلود:</h5>
+                {% for link in media.links.all %}
+                <a href="{{ link.link }}" class="theme-btn" {% if link.size is not null %} title="{{ link.size|filesizeformat }}" {% endif %}>
+                    <span class="fas fa-arrow-down-to-arc"></span>
+                    دانلود: {{ link.quality }}
+                </a>
+                {% endfor %}
+                {% else %}
+                <h5>یک قسمت رو  از پایین برای دانلود انتخاب کنید.</h5>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="movie-keyword">
+                <span>کلمه کلیدی :</span>
+                <a href="#">مشاهده</a>
+                <a href="#">استریم</a>
+                <a href="#">اکشن</a>
+                <a href="#">۲۰۲۳</a>
+                <a href="#">دانود اچ دی</a>
+                <a href="#">جنایی</a>
+                <a href="#">دران</a>
+                <a href="#">فیلم اچ دی</a>
+                <a href="#">استریم اچ دی</a>
+                <a href="#">فیلم جدید</a>
+            </div>
+        </div>
+    </div>
+</div>

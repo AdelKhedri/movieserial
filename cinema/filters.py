@@ -50,8 +50,8 @@ class MovieFilter(django_filters.FilterSet):
         field_name='description',
         widget=forms.TextInput(attrs={'class': 'form-control', 'style': 'padding: 10px'})
     )
-    country = django_filters.MultipleChoiceFilter(
-        choices=[(country.id, country.name) for country in Country.objects.all()],
+    countrys = django_filters.MultipleChoiceFilter(
+        choices=[(countrys.id, countrys.name) for countrys in Country.objects.all()],
         label='کشور',
         lookup_expr='in',
         widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),

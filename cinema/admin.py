@@ -1,12 +1,12 @@
 from django.contrib import admin
-from .models import Movie, Geners, DownloadLink, Agents, Comment, Country, MediaBookmark
+from .models import Movie, Geners, DownloadLink, Agents, Comment, Country, MediaBookmark, Serial, Section, Episode
 from django.utils.html import format_html
 
 
 @admin.register(Movie)
 class MovieRegister(admin.ModelAdmin):
-    list_display = ['persian_name', 'year_create', 'get_country', 'slug', 'get_geners', 'imdb_link',  'get_image', ]
-    filter_horizontal = ['stars', 'geners', 'links', 'likes', 'dislikes', 'related_movies', 'country']
+    list_display = ['persian_name', 'year_create', 'get_countrys', 'slug', 'get_geners', 'imdb_link',  'get_image', ]
+    filter_horizontal = ['stars', 'geners', 'links', 'likes', 'dislikes', 'related_movies', 'countrys']
     list_filter = ['geners']
     search_fields = ['perisan_name', 'english_name', 'discription']
     autocomplete_fields = ['director']
@@ -15,14 +15,14 @@ class MovieRegister(admin.ModelAdmin):
     show_full_result_count = False
 
     def get_queryset(self, request):
-        return super().get_queryset(request).prefetch_related('geners', 'stars', 'links', 'likes', 'dislikes', 'country',)
+        return super().get_queryset(request).prefetch_related('geners', 'stars', 'links', 'likes', 'dislikes', 'countrys', 'related_movies')
 
     def get_image(self, obj):
         return format_html(f'<img src="{obj.baner.url}" with="150px" height="150px">')
 
-    def get_country(self, obj):
+    def get_countrys(self, obj):
         return format_html(''.join(
-            [f'<span style="background-color: #38ff28; border-radius: 7px;padding: 3px 6px; margin-right:4px;">{country.name}</span>' for country in obj.country.all()]
+            [f'<span style="background-color: #38ff28; border-radius: 7px;padding: 3px 6px; margin-right:4px;">{countrys.name}</span>' for countrys in obj.countrys.all()]
             ))
     
     def get_geners(self, obj):
@@ -67,5 +67,48 @@ class CountryRegister(admin.ModelAdmin):
 
 
 @admin.register(MediaBookmark)
-class CountryRegister(admin.ModelAdmin):
+class MediaBookmarkRegister(admin.ModelAdmin):
     list_display = [field.name for field in MediaBookmark._meta.fields] + ['get_media_object']
+
+
+@admin.register(Episode)
+class EpisodeRegister(admin.ModelAdmin):
+    list_display = [field.name for field in Episode._meta.fields]
+    filter_horizontal = ['links']
+    
+    def get_queryset(self, request):
+        return super().get_queryset(request).prefetch_related('links')
+
+
+@admin.register(Section)
+class SectionRegister(admin.ModelAdmin):
+    list_display = [field.name for field in Section._meta.fields]
+    filter_horizontal = ['episodes']
+    list_filter = ['status']
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).prefetch_related('episodes')
+
+
+@admin.register(Serial)
+class SerialRegister(admin.ModelAdmin):
+    list_display = ['persian_name' , 'year_create', 'get_countrys', 'get_baner', 'imdb_point', 'get_geners']
+    filter_horizontal = ['countrys', 'geners', 'dislikes', 'likes', 'stars', 'related_serials', 'sections']
+    list_filter = ['quality']
+    list_select_related = ['director']
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).prefetch_related('countrys', 'geners', 'dislikes', 'likes', 'stars', 'related_serials', 'sections')
+
+    def get_baner(self, obj):
+        return format_html(f'<img src="{obj.baner.url}" with="150px" height="150px">')
+
+    def get_countrys(self, obj):
+        return format_html(''.join(
+            [f'<span style="background-color: #38ff28; border-radius: 7px;padding: 3px 6px; margin-right:4px;">{countrys.name}</span>' for countrys in obj.countrys.all()]
+            ))
+    
+    def get_geners(self, obj):
+        return format_html(''.join(
+            [f'<span style="background-color: #38ff28; border-radius: 7px;padding: 3px 6px; margin-right:4px;">{gener.name}</span>' for gener in obj.geners.all()]
+            ))
