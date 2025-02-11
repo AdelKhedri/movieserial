@@ -4,7 +4,7 @@ from django.views.generic import View
 from django.utils import timezone
 from django.db.models import Q
 from django.core.paginator import Paginator
-from .models import Country, MediaBookmark, Movie, Comment, Geners
+from .models import Country, MediaBookmark, Movie, Comment, Geners, Serial
 from .forms import CommentForm
 from .filters import MovieFilter
 
@@ -80,5 +80,46 @@ class ToggleBookmarkMovieView(View):
         bookmark, result = MediaBookmark.objects.get_or_create(user=request.user, media_type='movie', media_id=movie.pk)
         if not result: bookmark.delete()
         next_url = request.GET.get('next', None)
-        next_page = next_url if next_url and next_url != reverse('movie:toggle-bookmark-movie', kwargs={'slug': movie.slug}) else None
-        return redirect(next_page) if next_page else redirect(reverse('movie:details', kwargs={'slug': movie.slug}))
+        next_page = next_url if next_url and next_url != reverse('media:toggle-bookmark-movie', kwargs={'slug': movie.slug}) else None
+        return redirect(next_page) if next_page else redirect(reverse('media:movie-details', kwargs={'slug': movie.slug}))
+
+
+class SerialDetailsView(View):
+    template_name = 'cinema/serial-details.html'
+
+    def setup(self, request, *args, **kwargs):
+        self.serial = get_object_or_404(Serial, slug=kwargs['slug'])
+        comments = Comment.objects.filter(parent__isnull = True, media_type = 'serial', media_id = self.serial.pk, accepted = True)
+        comment_count = Comment.objects.filter(accepted = True, media_type = 'serial', media_id = self.serial.pk).count()
+        is_bookmarked = MediaBookmark.objects.filter(user = request.user, media_type = 'serial', media_id = self.serial.pk).exists() if request.user.is_authenticated else False
+
+        self.context = {
+            'serial': self.serial,
+            'comments': comments,
+            'comment_form': CommentForm(),
+            'comment_count': comment_count,
+            'gener_list': Geners.objects.all(),
+            'country_list': Country.objects.all(),
+            'is_bookmarked': is_bookmarked
+        }
+        return super().setup(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name, self.context)
+
+    def post(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            comment_form = CommentForm(request.POST)
+            if comment_form.is_valid():
+                parent_id = comment_form.cleaned_data.get('parent', None)
+                message = comment_form.cleaned_data['message']
+                parent = Comment.objects.filter(id=parent_id).first()
+                comment = Comment.objects.create(message = message, media_type = 'serial', media_id = self.serial.pk, user = request.user)
+
+                if parent:
+                    comment.parent = parent
+                self.context['msg'] = 'send comment success'
+                comment.save()
+            else:
+                self.context['comment'] = comment_form
+        return render(request, self.template_name, self.context)

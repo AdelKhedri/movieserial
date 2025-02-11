@@ -59,7 +59,7 @@ class BaseMedia(models.Model):
     english_name = models.CharField(max_length=200, verbose_name='نام انگلیسی')
     year_create = models.IntegerField(verbose_name='سال ساخت')
     slug = models.SlugField(unique=True, verbose_name='اسلاگ')
-    country = models.ManyToManyField(Country, blank=True, verbose_name='کشور')
+    countrys = models.ManyToManyField(Country, blank=True, verbose_name='کشور')
     imdb_point = models.DecimalField(max_digits=4, decimal_places=2, validators=[MaxValueValidator(10.0), MinValueValidator(0.0)], verbose_name='امتیاز imdb')
     imdb_link = models.URLField(blank=True, verbose_name='لینک(ارجاع به  imdb)')
     description = models.CharField(max_length=700, blank=True, verbose_name='درباره')
@@ -67,11 +67,11 @@ class BaseMedia(models.Model):
     trailer = models.URLField(blank=True, verbose_name='تریلر')
     director = models.ForeignKey(Agents, on_delete=models.SET_NULL, blank=True, null=True, verbose_name='کارگردان')
     geners = models.ManyToManyField(Geners, verbose_name='ژانر ها')
-    stars = models.ManyToManyField(Agents, blank=True, related_name='stars', verbose_name='ستارگان')
-    likes = models.ManyToManyField(User, blank=True, related_name='likes', verbose_name='لایک ها')
     dislikes = models.ManyToManyField(User, blank=True, verbose_name='دیس لایک')
     release_date = models.DateTimeField(blank=True, null=True, verbose_name='زمان پخش')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='زمان ساخت')
+    quality_types = (('Cam', 'پرده سینما'), ('TS', 'تی اس'), ('SD', 'SD'), ('HD', 'HD'), ('FHD', 'Full HD'), ('2K', '2K'), ('4K', '4K'), ('8K', '8K'))
+    quality = models.CharField(max_length=3, choices=quality_types, blank=True, verbose_name='کیفیت')
     # Keyword = models
 
     # point = models.DecimalField(
@@ -113,11 +113,11 @@ class DownloadLink(models.Model):
 
 
 class Movie(BaseMedia):
-    quality_types = (('Cam', 'پرده سینما'), ('TS', 'تی اس'), ('SD', 'SD'), ('HD', 'HD'), ('FHD', 'Full HD'), ('2K', '2K'), ('4K', '4K'), ('8K', '8K'))
-    quality = models.CharField(max_length=3, choices=quality_types, blank=True, verbose_name='کیفیت')
     duration = models.TimeField(blank=True, null=True, verbose_name='زمان')
     links = models.ManyToManyField(DownloadLink, verbose_name='لینک های دانلود')
     related_movies = models.ManyToManyField('self', blank=True, verbose_name='فیلم های مشابه')
+    stars = models.ManyToManyField(Agents, blank=True, related_name='movie_stars', verbose_name='ستارگان')
+    likes = models.ManyToManyField(User, blank=True, related_name='movie_likes', verbose_name='لایک ها')
 
 
     class Meta:
@@ -176,3 +176,52 @@ class MediaBookmark(models.Model):
     def __str__(self):
         print(self.get_media_object())
         return self.get_media_object().__str__() if isinstance(self.get_media_object(), Movie) else self.media_type
+
+
+class Episode(models.Model):
+    name = models.CharField(max_length=200, verbose_name='')
+    baner = models.ImageField(upload_to='', verbose_name='')
+    time = models.TimeField(blank=True, verbose_name='')
+    links = models.ManyToManyField(DownloadLink, verbose_name='')
+
+    class Meta:
+        verbose_name = 'قسمت'
+        verbose_name_plural = 'قسمت ها'
+        ordering = ['id']
+
+    def __str__(self):
+        return self.name
+
+
+class Section(models.Model):
+    name = models.CharField(max_length=150, verbose_name='نام')
+    episodes = models.ManyToManyField(Episode, verbose_name='قسمت ها')
+    status_types = (('creating', 'درحال تولید'),('completed', 'تکمیل شده'), ('canceled', 'کنسل شده'))
+    status = models.CharField(max_length=150, choices=status_types, verbose_name='وضعیت')
+
+    class Meta:
+        verbose_name = 'فصل'
+        verbose_name_plural = 'فصل ها'
+        ordering = ['id']
+
+
+    def __str__(self):
+        return self.name
+
+
+class Serial(BaseMedia):
+    sections = models.ManyToManyField(Section, blank=True, verbose_name='بخش ها')
+    last_episod = models.CharField(max_length=200, verbose_name='آخرین قسمت')
+    related_serials = models.ManyToManyField('self', blank=True, verbose_name='سریال های مشابه')
+    stars = models.ManyToManyField(Agents, blank=True, related_name='serial_stars', verbose_name='ستارگان')
+    likes = models.ManyToManyField(User, blank=True, related_name='serial_likes', verbose_name='لایک ها')
+
+
+    class Meta:
+        verbose_name = 'سریال'
+        verbose_name_plural = 'سریال ها'
+        ordering = ['persian_name']
+
+
+    def __str__(self):
+        return f'{self.persian_name}: {self.id}'
