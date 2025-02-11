@@ -1,17 +1,14 @@
-from django.test import TestCase
-from ..models import Movie, Comment, Ganers, DownloadLink, Agents
-from ..forms import CommentForm
+from user.tests.tests_views import BaseTestCase
+from ..models import Movie, Comment
 from user.models import User
 from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
 import os
 
 
-class DetailsMovieView(TestCase):
+class DetailsMovieView(BaseTestCase):
     def setUp(self):
-        self.user = User.objects.create(username='user', is_active=True, email='user@gmail.com')
-        self.user.set_password('password')
-        self.user.save()
+        super().setUp()
         self.media_name = 'test.jpg'
         self.poster = SimpleUploadedFile(
             name = self.media_name,
@@ -23,7 +20,6 @@ class DetailsMovieView(TestCase):
             english_name = 'test',
             year_create = 2022,
             slug = 'test',
-            country = 'india',
             imdb_link = 'https://imdb.com/title/45656',
             imdb_point = 2.2,
             baner = self.poster
@@ -35,12 +31,11 @@ class DetailsMovieView(TestCase):
         res = self.client.get(self.url)
         self.assertEqual(res.status_code, 200)
 
-    def test_temolate_used(self):
+    def test_template_used(self):
         res = self.client.get(self.url)
         self.assertTemplateUsed(res, 'cinema/movie-details.html')
 
     def test_send_comment_success(self):
-        self.client.force_login(self.user)
         res = self.client.post(self.url, data={'message': 'test'})
         self.assertEqual(res.status_code, 200)
         self.assertContains(res, 'نظر شما با موفقیت ثبت شد و پس از تایید نمایش داده میشود')
@@ -53,6 +48,7 @@ class DetailsMovieView(TestCase):
         self.assertContains(res, 'نظر شما با موفقیت ثبت شد و پس از تایید نمایش داده میشود')
 
     def test_send_comment_failed_loginrequired(self):
+        self.client.get(reverse('user:logout'))
         res = self.client.post(self.url, data={'message': 'test'})
         self.assertEqual(res.status_code, 200)
         self.assertNotContains(res, 'نظر شما با موفقیت ثبت شد و پس از تایید نمایش داده میشود')

@@ -21,7 +21,7 @@ class MovieDetailsView(View):
         self.movie = get_object_or_404(Movie, Q(release_date__gte=timezone.now()) | Q(release_date__isnull=True), **kwargs)
         comment_count = Comment.objects.filter(accepted=True, media_type='movie', media_id=self.movie.id).count()
         comments = Comment.objects.filter(parent__isnull=True, accepted=True, media_type='movie', media_id=self.movie.id)
-        is_bookmarked = MediaBookmark.objects.filter(user=request.user, media_type='movie', media_id=self.movie.pk).exists()
+        is_bookmarked = MediaBookmark.objects.filter(user=request.user, media_type='movie', media_id=self.movie.pk).exists() if request.user.is_authenticated else False
         # TODO: show Pending comments for sender 
 
         self.context = {
