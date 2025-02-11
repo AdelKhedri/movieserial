@@ -104,7 +104,7 @@
                                 <a href="{% url 'user:profile' %}" class="nav-link {% block my_account %}"{% endblock %}>اکانت من</a>
                             </li>
                             <li class="nav-item">
-                                <a href="#" class="nav-link {% block likes %}" {% endblock %}>علاقه مندی</a>
+                                <a href="{% url 'user:user-bookmarks' %}" class="nav-link {% block bookmarks %}" {% endblock %}>علاقه مندی</a>
                             </li>
                             <li class="nav-item">
                                 <a href="{% url 'user:notification' %}" class="nav-link {% block notification %}" {% endblock %}>اعلانات

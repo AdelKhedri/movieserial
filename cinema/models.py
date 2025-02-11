@@ -165,6 +165,7 @@ class MediaBookmark(models.Model):
     class Meta:
         verbose_name = 'میدیای ذخیره شده'
         verbose_name_plural = 'مدیا های ذخیره شده'
+        odrerin = ['id']
 
     def get_media_object(self):
         try:
