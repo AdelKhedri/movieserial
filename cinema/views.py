@@ -79,4 +79,6 @@ class ToggleBookmarkMovieView(View):
         movie = get_object_or_404(Movie, slug=kwargs['slug'])
         bookmark, result = MediaBookmark.objects.get_or_create(user=request.user, media_type='movie', media_id=movie.pk)
         if not result: bookmark.delete()
-        return redirect(reverse('movie:details', kwargs={'slug': movie.slug}))
+        next_url = request.GET.get('next', None)
+        next_page = next_url if next_url and next_url != reverse('movie:toggle-bookmark-movie', kwargs={'slug': movie.slug}) else None
+        return redirect(next_page) if next_page else redirect(reverse('movie:details', kwargs={'slug': movie.slug}))
