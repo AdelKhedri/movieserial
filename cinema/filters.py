@@ -1,5 +1,5 @@
 import django_filters 
-from .models import Agents, Country, Geners, Movie
+from .models import Agents, Country, Geners, Movie, Serial
 from django import forms
 
 
@@ -40,7 +40,7 @@ class MovieFilter(django_filters.FilterSet):
     )
     imdb_point_gt = django_filters.CharFilter(
         lookup_expr='gt',
-        field_name='year_create',
+        field_name='imdb_point',
         label='امتیاز imdb بیشتر از',
         widget=forms.NumberInput(attrs={'class': 'form-control', 'style': 'padding: 10px'})
     )
@@ -88,4 +88,10 @@ class MovieFilter(django_filters.FilterSet):
 
     class Meta:
         model = Movie
+        fields = ['persian_name', 'english_name', 'description', 'geners', 'quality']
+
+
+class SerialFilter(MovieFilter):
+    class Meta:
+        model = Serial
         fields = ['persian_name', 'english_name', 'description', 'geners', 'quality']

@@ -7,7 +7,7 @@ from django.db.models import Q
 from django.core.paginator import Paginator
 from .models import Country, MediaBookmark, Movie, Comment, Geners, Serial
 from .forms import CommentForm
-from .filters import MovieFilter
+from .filters import MovieFilter, SerialFilter
 
 
 def paginate_objects(resutl, per_page, page):
@@ -57,19 +57,24 @@ class MovieDetailsView(View):
         return render(request, self.template_name, self.context)
 
 
-class FilterMovieView(View):
+class FilterMediaView(View):
     template_name = 'cinema/movies-filter.html'
 
     def get(self, request, *args, **kwargs):
-        movies = Movie.objects.all()
-        filters = MovieFilter(request.GET, movies)
+        if kwargs['media_type'] not in ['movie', 'serial']:
+            raise Http404()
+        
+        model = Movie if kwargs['media_type'] == 'movie' else Serial
+        media = model.objects.all()
+        filters = MovieFilter(request.GET, media) if model == Movie else SerialFilter(request.GET, media)
         page = request.GET.get('page', None)
 
         context = {
             'page_title': 'فیلتر فیلم ها',
             'gener_list': Geners.objects.all(),
             'country_list': Country.objects.all(),
-            'movies': paginate_objects(filters.qs, 15, page),
+            # 'movies': paginate_objects(filters.qs, 15, page),
+            'media': paginate_objects(filters.qs, 15, page),
             'filters': filters
         }
         return render(request, self.template_name, context)
@@ -144,6 +149,7 @@ class EpisodeDetailsView(View):
         self.context = {
             'serial': self.serial,
             'episode': episode,
+            'section': section,
             'gener_list': Geners.objects.all(),
             'country_list': Country.objects.all(), 
             'comments': comments,
@@ -171,3 +177,7 @@ class EpisodeDetailsView(View):
             else:
                 self.context['msg'] = comment_form
         return render(request, self.template_name, self.context)
+
+
+class SerialFilterView(View):
+    pass
