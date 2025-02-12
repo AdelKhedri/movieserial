@@ -21,7 +21,6 @@
                         <div class="filter-search">
                             <div class="form-group">
                                 {{ filters.form.persian_name }}
-                                <!-- <input type="text" class="form-control" placeholder="نام فیلم را وارد نمایید . . ."> -->
                                 <button type="submit"><i class="icon-search"></i></button>
                             </div>
                         </div>
@@ -29,36 +28,6 @@
                     <div class="col-lg-7">
                         <div class="filter-content">
                                 <div class="filter-sort">
-                                    <!-- <div class="filter-select">
-                                        <select class="select">
-                                            <option value="">نوع</option>
-                                            <option value="1">همه</option>
-                                            <option value="2">فیلم</option>
-                                            <option value="3">سریال</option>
-                                        </select>
-                                    </div>
-                                    <div class="filter-select">
-                                        <select class="select">
-                                            <option value="">کیفیت</option>
-                                            <option value="1">همه</option>
-                                            <option value="2">اچ دی</option>
-                                            <option value="3">اس دی</option>
-                                            <option value="4">تی اس</option>
-                                            <option value="5">پرده سینما</option>
-                                            <option value="6">دی وی دی</option>
-                                        </select>
-                                    </div>
-                                    <div class="filter-select">
-                                        <select class="select">
-                                            <option value="">امتیاز</option>
-                                            <option value="1">همه</option>
-                                            <option value="2">بین ۹-۱۰</option>
-                                            <option value="3">بین ۸-۹</option>
-                                            <option value="4">بین ۷-۸</option>
-                                            <option value="5">بین ۶-۷</option>
-                                            <option value="6">بین ۴-۶</option>
-                                        </select>
-                                    </div> -->
                                     {% for field in filters.form %}
                                     {% if field.field.widget.input_type == 'select' %}
                                     <div class="filter-select">
@@ -133,20 +102,20 @@
         <div class="movie-area py-80" dir="rtl">
             <div class="container">
                 <div class="row row-cols-xl-5">
-                    {% for movie in movies %}
+                    {% for media_obj in media %}
                     <div class="col-6 col-md-4 col-lg-3 col-xl">
                         <div class="movie-item">
-                            <span class="movie-quality">{{ movie.get_quality_display }}</span>
+                            <span class="movie-quality">{{ media_obj.get_quality_display }}</span>
                             <div class="movie-img">
-                                <img src="{{ movie.baner.url }}" alt="">
-                                <a href="{{ movie.get_absolute_url }}" class="movie-play"><i class="icon-play-3"></i></a>
+                                <img src="{{ media_obj.baner.url }}" alt="">
+                                <a href="{{ media_obj.get_absolute_url }}" class="movie-play"><i class="icon-play-3"></i></a>
                             </div>
                             <div class="movie-content">
-                                <h6 class="movie-title"><a href="{{ movie.get_absolute_url }}">{{ movie.persian_name }}</a></h6>
+                                <h6 class="movie-title"><a href="{{ media_obj.get_absolute_url }}">{{ media_obj.persian_name }}</a></h6>
                                 <div class="movie-info">
-                                    <span class="movie-time">{{ movie.time|date:'G ساعت و i دقیقه' }}</span>
+                                    <span class="movie-time">{{ media_obj.time|date:'G ساعت و i دقیقه' }}</span>
                                     <div class="movie-genre">
-                                        {% for gener in movie.geners.all %}
+                                        {% for gener in media_obj.geners.all %}
                                         <a href="#">{{ gener }}</a>
                                         {% endfor %}
                                     </div>
@@ -157,7 +126,7 @@
                     {% endfor %}
                 </div>
 
-                {% include 'components/pagination.html' with object=movies %}
+                {% include 'components/pagination.html' with object=media_obj %}
 
             </div>
         </div>

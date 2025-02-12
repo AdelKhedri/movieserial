@@ -17,7 +17,12 @@
                     <a href="{{ media.trailer }}"
                     class="theme-btn popup-youtube"><span
                     class="fas fa-video"></span>تریلر</a>
-                    <a href="{{ meida.get_bookmark_url }}" 
+                    <a 
+                    {% if links %}
+                    href="{{ media.get_bookmark_url }}?next={% url 'media:serial-details-episode' media.slug section.pk episode.pk %}" 
+                    {% else %}
+                    href="{{ media.get_bookmark_url }}" 
+                    {% endif %}
                     {% if request.user.is_authenticated and is_bookmarked %}
                     class="btn btn-success">
                     ذخیره شده
