@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.urls import reverse
 from user.models import User
 
 
@@ -88,6 +89,12 @@ class BaseMedia(models.Model):
     class Meta:
         abstract = True
 
+    def get_absolute_url(self):
+        media_type = self.__class__.__name__.lower()
+        return reverse(f'media:{media_type}-details', kwargs={'slug': self.slug})
+
+    def get_bookmark_url(self):
+        return reverse('media:toggle-bookmark-media', kwargs={'media_type': self.__class__.__name__.lower(), 'slug': self.slug})
 
     def __str__(self):
         return self.name
@@ -156,28 +163,6 @@ class Comment(models.Model):
         return self.user.__str__()
 
 
-class MediaBookmark(models.Model):
-    media_types = (('movie', 'فیلم'), ('serial', 'سریال'))
-    media_type = models.CharField(max_length=6, choices=media_types, verbose_name='فلیم/سریال')
-    media_id = models.IntegerField(verbose_name='ایدی مدیا')
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='کاربر')
-
-    class Meta:
-        verbose_name = 'میدیای ذخیره شده'
-        verbose_name_plural = 'مدیا های ذخیره شده'
-        ordering = ['id']
-
-    def get_media_object(self):
-        try:
-            return Movie.objects.get(id=self.media_id) if self.media_type == 'movie' else ''
-        except:
-            pass
-
-    def __str__(self):
-        print(self.get_media_object())
-        return self.get_media_object().__str__() if isinstance(self.get_media_object(), Movie) else self.media_type
-
-
 class Episode(models.Model):
     name = models.CharField(max_length=200, verbose_name='قسمت')
     baner = models.ImageField(upload_to=folder_finder, verbose_name='عکس')
@@ -225,3 +210,25 @@ class Serial(BaseMedia):
 
     def __str__(self):
         return f'{self.persian_name}: {self.id}'
+
+
+class MediaBookmark(models.Model):
+    media_types = (('movie', 'فیلم'), ('serial', 'سریال'))
+    media_type = models.CharField(max_length=6, choices=media_types, verbose_name='فلیم/سریال')
+    media_id = models.IntegerField(verbose_name='ایدی مدیا')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='کاربر')
+
+    class Meta:
+        verbose_name = 'میدیای ذخیره شده'
+        verbose_name_plural = 'مدیا های ذخیره شده'
+        ordering = ['id']
+
+    def get_media_object(self):
+        try:
+            return Movie.objects.get(id=self.media_id) if self.media_type == 'movie' else Serial.objects.get(id=self.media_id)
+        except:
+            pass
+
+
+    def __str__(self):
+        return self.get_media_object().__str__()

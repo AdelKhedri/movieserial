@@ -139,10 +139,10 @@
                             <span class="movie-quality">{{ movie.get_quality_display }}</span>
                             <div class="movie-img">
                                 <img src="{{ movie.baner.url }}" alt="">
-                                <a href="{% url 'media:movie-details' movie.slug %}" class="movie-play"><i class="icon-play-3"></i></a>
+                                <a href="{{ movie.get_absolute_url }}" class="movie-play"><i class="icon-play-3"></i></a>
                             </div>
                             <div class="movie-content">
-                                <h6 class="movie-title"><a href="{% url 'media:movie-details' movie.id %}">{{ movie.persian_name }}</a></h6>
+                                <h6 class="movie-title"><a href="{{ movie.get_absolute_url }}">{{ movie.persian_name }}</a></h6>
                                 <div class="movie-info">
                                     <span class="movie-time">{{ movie.time|date:'G ساعت و i دقیقه' }}</span>
                                     <div class="movie-genre">

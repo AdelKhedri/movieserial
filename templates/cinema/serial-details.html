@@ -158,7 +158,7 @@
                             <div class="movie-item">
                                 <div class="movie-img">
                                     <img src="{{ related_serial.baner.url }}" alt="">
-                                    <a href="{% url 'media:serial-details' related_serial.slug %}" class="movie-play"><i class="icon-play-4"></i></a>
+                                    <a href="{{ related_serial.get_absolute_url }}" class="movie-play"><i class="icon-play-4"></i></a>
                                 </div>
                                 <div class="movie-content" dir="rtl">
                                     <h6 class="movie-title"><a href="#">{{ related_serial.persian_name }}</a></h6>

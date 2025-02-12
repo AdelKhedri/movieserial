@@ -96,6 +96,7 @@ class SerialRegister(admin.ModelAdmin):
     filter_horizontal = ['countrys', 'geners', 'dislikes', 'likes', 'stars', 'related_serials', 'sections']
     list_filter = ['quality']
     list_select_related = ['director']
+    prepopulated_fields = {'slug': ('english_name', 'year_create',)}
 
     def get_queryset(self, request):
         return super().get_queryset(request).prefetch_related('countrys', 'geners', 'dislikes', 'likes', 'stars', 'related_serials', 'sections')

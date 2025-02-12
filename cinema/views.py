@@ -1,3 +1,4 @@
+from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.views.generic import View
@@ -30,7 +31,7 @@ class MovieDetailsView(View):
             'gener_list': Geners.objects.all(),
             'country_list': Country.objects.all(),
             'comment_count': comment_count,
-            'bookmark': is_bookmarked,
+            'is_bookmarked': is_bookmarked,
             'comment_form': CommentForm(),
         }
         return super().setup(request, *args, **kwargs)
@@ -74,14 +75,18 @@ class FilterMovieView(View):
         return render(request, self.template_name, context)
 
 
-class ToggleBookmarkMovieView(View):
+class ToggleBookmarkMediaView(View):
     def get(self, request, *args, **kwargs):
-        movie = get_object_or_404(Movie, slug=kwargs['slug'])
-        bookmark, result = MediaBookmark.objects.get_or_create(user=request.user, media_type='movie', media_id=movie.pk)
+        if kwargs['media_type'] not in ['movie', 'serial']:
+            raise Http404()
+
+        model = Movie if kwargs['media_type'] == 'movie' else Serial
+        media = get_object_or_404(model, slug=kwargs['slug'])
+        bookmark, result = MediaBookmark.objects.get_or_create(user=request.user, media_type=model.__name__.lower(), media_id=media.pk)
         if not result: bookmark.delete()
         next_url = request.GET.get('next', None)
-        next_page = next_url if next_url and next_url != reverse('media:toggle-bookmark-movie', kwargs={'slug': movie.slug}) else None
-        return redirect(next_page) if next_page else redirect(reverse('media:movie-details', kwargs={'slug': movie.slug}))
+        next_page = next_url if next_url and next_url != reverse('media:toggle-bookmark-media', kwargs={'slug': media.slug, 'media_type': model.__name__.lower()}) else None
+        return redirect(next_page) if next_page else redirect(reverse(f'media:{model.__name__.lower()}-details', kwargs={'slug': media.slug}))
 
 
 class SerialDetailsView(View):
