@@ -11,13 +11,13 @@
             <div class="movie-item">
                 {% with media_obj=media.get_media_object %}
                 <span class="movie-quality">{{ media_obj.quality }}</span>
-                <a href="{% url 'movie:toggle-bookmark-movie' media_obj.slug %}?next={% url 'user:user-bookmarks' %}" class="movie-dislike"><i class="far fa-thumbs-down"></i></a>
+                <a href="{{ media_obj.get_bookmark_url }}?next={% url 'user:user-bookmarks' %}" class="movie-dislike"><i class="far fa-thumbs-down"></i></a>
                 <div class="movie-img">
                     <img src="{{ media_obj.baner.url }}" alt="">
-                    <a href="{% url 'movie:details' media_obj.slug %}" class="movie-play"><i class="icon-play-3"></i></a>
+                    <a href="{{ media_obj.get_absolute_url }}" class="movie-play"><i class="icon-play-3"></i></a>
                 </div>
                 <div class="movie-content">
-                    <h6 class="movie-title"><a href="{% url 'movie:details' media_obj.slug %}">{{ media_obj.persian_name }}</a></h6>
+                    <h6 class="movie-title"><a href="{{ media_obj.get_absolute_url }}">{{ media_obj.persian_name }}</a></h6>
                     <div class="movie-info">
                         <span class="movie-time">{{ media_obj.time|date:'G ساعت و i دقیقه' }}</span>
                         <div class="movie-genre">

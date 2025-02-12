@@ -17,9 +17,8 @@
                     <a href="{{ media.trailer }}"
                     class="theme-btn popup-youtube"><span
                     class="fas fa-video"></span>تریلر</a>
-                    {% if media_type == 'movie' %}
-                    <a href="{% url 'media:toggle-bookmark-movie' media.slug %}" 
-                    {% if request.user.is_authenticated and bookmark %}
+                    <a href="{{ meida.get_bookmark_url }}" 
+                    {% if request.user.is_authenticated and is_bookmarked %}
                     class="btn btn-success">
                     ذخیره شده
                     {% else %}
@@ -27,7 +26,6 @@
                     ذخیره نشده
                     {% endif %}
                     </a>
-                    {% endif %}
                 </h4>
                 <p>{{ media.english_name }}</p>
                 <p>

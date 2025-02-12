@@ -28,7 +28,7 @@
                                         <div class="movie-item">
                                             <div class="movie-img">
                                                 <img src="{{ related_movie.baner.url }}" alt="">
-                                                <a href="{% url 'media:movie-details' related_movie.slug %}" class="movie-play"><i class="icon-play-4"></i></a>
+                                                <a href="{{ related_movie.get_absolute_url }}" class="movie-play"><i class="icon-play-4"></i></a>
                                             </div>
                                             <div class="movie-content" dir="rtl">
                                                 <h6 class="movie-title"><a href="#">{{ related_movie.persian_name }}</a></h6>

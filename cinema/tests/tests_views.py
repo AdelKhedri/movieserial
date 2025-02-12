@@ -1,5 +1,5 @@
 from user.tests.tests_views import BaseTestCase
-from ..models import Agents, Country, DownloadLink, Episode, Geners, Movie, Comment, Section, Serial
+from ..models import Agents, Country, DownloadLink, Episode, Geners, MediaBookmark, Movie, Comment, Section, Serial
 from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
 import os
@@ -167,3 +167,34 @@ class TestEpisodeDetailsView(BaseTestCase):
         baners = [self.baner_name, self.baner_name2]
         for baner in baners:
             os.remove('media/images/serials/' + baner)
+
+
+class TestToggleBookmarkMediaView(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        media_data = {
+            'persian_name': 'تست',
+            'slug': 'test',
+            'year_create': 2023,
+            'imdb_point': 2.6,
+            'baner': SimpleUploadedFile('test.jpg', b'', 'image/jpeg'),
+            'quality': 'HD'
+        }
+        self.movie = Movie.objects.create(**media_data)
+        self.serial = Serial.objects.create(**media_data)
+        self.toggle_movie_url = reverse('media:toggle-bookmark-media', kwargs={'media_type': 'movie', 'slug': self.movie.slug})
+        self.toggle_serial_url = reverse('media:toggle-bookmark-media', kwargs={'media_type': 'serial', 'slug': self.serial.slug})
+
+    def test_url(self):
+        res = self.client.get(self.toggle_serial_url)
+        self.assertEqual(res.status_code, 302)
+
+    def test_toggle_movie(self):
+        self.client.get(self.toggle_movie_url)
+        obj, is_bookmarked = MediaBookmark.objects.get_or_create(user=self.user, media_type='movie', media_id=self.movie.pk)
+        self.assertFalse(is_bookmarked)
+
+    def test_toggle_serial(self):
+        self.client.get(self.toggle_serial_url)
+        obj, is_bookmarked = MediaBookmark.objects.get_or_create(user=self.user, media_type='serial', media_id=self.movie.pk)
+        self.assertFalse(is_bookmarked)

@@ -296,7 +296,7 @@ class NotificationDeleteView(LoginRequiredMixin, View):
 
 class BookmarkView(LoginRequiredMixin, ListView):
     template_name = 'user/bookmark.html'
-    paginate_by = 1
+    paginate_by = 15
     context_object_name = 'media_list'
     
     def get_queryset(self):
