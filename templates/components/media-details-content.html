@@ -10,6 +10,9 @@
             <div class="movie-info">
                 <h4 class="movie-name">
                     {{ media.persian_name }}
+                    {% if media_type == 'serial' and links %}
+                    <span class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-success bg-success-subtle border border-success-subtle rounded-2">{{ episode.name }}</span>
+                    {% endif %}
 
                     <a href="{{ media.trailer }}"
                     class="theme-btn popup-youtube"><span
