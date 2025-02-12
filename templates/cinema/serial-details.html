@@ -7,7 +7,7 @@
         <div class="movie-single py-80" dir="rtl">
             <div class="container">
                 <div class="movie-single-wrap">
-                    {% include 'components/media-details-content.html' with media=serial media_type='serial' %}
+                    {% include 'components/media-details-content.html' with media=serial media_type='serial' links=episode.links.all %}
                     <div class="season-wrap">
                         <ul class="nav nav-pills" id="season-pills-tab" role="tablist">
                             {% for section in serial.sections.all %}
@@ -17,251 +17,8 @@
                                 aria-controls="pills-season{{ section.id }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">{{ section.name }}</button>
                             </li>
                             {% endfor %}
-                            <!-- <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="pills-season-tab2" data-bs-toggle="pill"
-                                data-bs-target="#pills-season2" type="button" role="tab"
-                                aria-controls="pills-season2" aria-selected="false">فصل ۲</button>
-                            </li> -->
                         </ul>
                         <div class="tab-content" id="season-pills-tabContent">
-                            <!-- <div class="tab-pane fade show active" id="pills-season1" role="tabpanel"
-                                aria-labelledby="pills-season-tab1" tabindex="0">
-                                <div class="season-content">
-                                    <div class="row">
-                                        <div class="col-md-6 col-lg-4 col-xl-3">
-                                            <div class="movie-item">
-                                                <div class="movie-img">
-                                                    <img src="images/s18.jpg" alt="">
-                                                    <a href="#" class="movie-play"><i class="icon-play-4"></i></a>
-                                                </div>
-                                                <div class="movie-content">
-                                                    <h6 class="movie-title"><a href="#">قسمت ۰۱</a></h6>
-                                                    <div class="movie-info">
-                                                        <span class="movie-season">۱ ساعت ۲۰ دقیقه</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 col-lg-4 col-xl-3">
-                                            <div class="movie-item">
-                                                <div class="movie-img">
-                                                    <img src="images/s18.jpg" alt="">
-                                                    <a href="#" class="movie-play"><i class="icon-play-4"></i></a>
-                                                </div>
-                                                <div class="movie-content">
-                                                    <h6 class="movie-title"><a href="#">قسمت ۰۲</a></h6>
-                                                    <div class="movie-info">
-                                                        <span class="movie-season">۱ ساعت ۲۰ دقیقه</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 col-lg-4 col-xl-3">
-                                            <div class="movie-item">
-                                                <div class="movie-img">
-                                                    <img src="images/s18.jpg" alt="">
-                                                    <a href="#" class="movie-play"><i class="icon-play-4"></i></a>
-                                                </div>
-                                                <div class="movie-content">
-                                                    <h6 class="movie-title"><a href="#">قسمت ۰۳</a></h6>
-                                                    <div class="movie-info">
-                                                        <span class="movie-season">۱ ساعت ۲۰ دقیقه</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 col-lg-4 col-xl-3">
-                                            <div class="movie-item">
-                                                <div class="movie-img">
-                                                    <img src="images/s18.jpg" alt="">
-                                                    <a href="#" class="movie-play"><i class="icon-play-4"></i></a>
-                                                </div>
-                                                <div class="movie-content">
-                                                    <h6 class="movie-title"><a href="#">قسمت ۰۴</a></h6>
-                                                    <div class="movie-info">
-                                                        <span class="movie-season">۱ ساعت ۲۰ دقیقه</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 col-lg-4 col-xl-3">
-                                            <div class="movie-item">
-                                                <div class="movie-img">
-                                                    <img src="images/s18.jpg" alt="">
-                                                    <a href="#" class="movie-play"><i class="icon-play-4"></i></a>
-                                                </div>
-                                                <div class="movie-content">
-                                                    <h6 class="movie-title"><a href="#">قسمت ۰۵</a></h6>
-                                                    <div class="movie-info">
-                                                        <span class="movie-season">۱ ساعت ۲۰ دقیقه</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 col-lg-4 col-xl-3">
-                                            <div class="movie-item">
-                                                <div class="movie-img">
-                                                    <img src="images/s18.jpg" alt="">
-                                                    <a href="#" class="movie-play"><i class="icon-play-4"></i></a>
-                                                </div>
-                                                <div class="movie-content">
-                                                    <h6 class="movie-title"><a href="#">قسمت ۰۶</a></h6>
-                                                    <div class="movie-info">
-                                                        <span class="movie-season">۱ ساعت ۲۰ دقیقه</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 col-lg-4 col-xl-3">
-                                            <div class="movie-item">
-                                                <div class="movie-img">
-                                                    <img src="images/s18.jpg" alt="">
-                                                    <a href="#" class="movie-play"><i class="icon-play-4"></i></a>
-                                                </div>
-                                                <div class="movie-content">
-                                                    <h6 class="movie-title"><a href="#">قسمت ۰۷</a></h6>
-                                                    <div class="movie-info">
-                                                        <span class="movie-season">۱ ساعت ۲۰ دقیقه</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 col-lg-4 col-xl-3">
-                                            <div class="movie-item">
-                                                <div class="movie-img">
-                                                    <img src="images/s18.jpg" alt="">
-                                                    <a href="#" class="movie-play"><i class="icon-play-4"></i></a>
-                                                </div>
-                                                <div class="movie-content">
-                                                    <h6 class="movie-title"><a href="#">قسمت ۰۸</a></h6>
-                                                    <div class="movie-info">
-                                                        <span class="movie-season">۱ ساعت ۲۰ دقیقه</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tab-pane fade" id="pills-season2" role="tabpanel"
-                                aria-labelledby="pills-season-tab2" tabindex="0">
-                                <div class="season-content">
-                                    <div class="row">
-                                        <div class="col-md-6 col-lg-4 col-xl-3">
-                                            <div class="movie-item">
-                                                <div class="movie-img">
-                                                    <img src="images/s18.jpg" alt="">
-                                                    <a href="#" class="movie-play"><i class="icon-play-4"></i></a>
-                                                </div>
-                                                <div class="movie-content">
-                                                    <h6 class="movie-title"><a href="#">قسمت 10</a></h6>
-                                                    <div class="movie-info">
-                                                        <span class="movie-season">۱ ساعت ۲۰ دقیقه</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 col-lg-4 col-xl-3">
-                                            <div class="movie-item">
-                                                <div class="movie-img">
-                                                    <img src="images/s18.jpg" alt="">
-                                                    <a href="#" class="movie-play"><i class="icon-play-4"></i></a>
-                                                </div>
-                                                <div class="movie-content">
-                                                    <h6 class="movie-title"><a href="#">قسمت ۰۲</a></h6>
-                                                    <div class="movie-info">
-                                                        <span class="movie-season">۱ ساعت ۲۰ دقیقه</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 col-lg-4 col-xl-3">
-                                            <div class="movie-item">
-                                                <div class="movie-img">
-                                                    <img src="images/s18.jpg" alt="">
-                                                    <a href="#" class="movie-play"><i class="icon-play-4"></i></a>
-                                                </div>
-                                                <div class="movie-content">
-                                                    <h6 class="movie-title"><a href="#">قسمت ۰۳</a></h6>
-                                                    <div class="movie-info">
-                                                        <span class="movie-season">۱ ساعت ۲۰ دقیقه</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 col-lg-4 col-xl-3">
-                                            <div class="movie-item">
-                                                <div class="movie-img">
-                                                    <img src="images/s18.jpg" alt="">
-                                                    <a href="#" class="movie-play"><i class="icon-play-4"></i></a>
-                                                </div>
-                                                <div class="movie-content">
-                                                    <h6 class="movie-title"><a href="#">قسمت ۰۴</a></h6>
-                                                    <div class="movie-info">
-                                                        <span class="movie-season">۱ ساعت ۲۰ دقیقه</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 col-lg-4 col-xl-3">
-                                            <div class="movie-item">
-                                                <div class="movie-img">
-                                                    <img src="images/s18.jpg" alt="">
-                                                    <a href="#" class="movie-play"><i class="icon-play-4"></i></a>
-                                                </div>
-                                                <div class="movie-content">
-                                                    <h6 class="movie-title"><a href="#">قسمت ۰۵</a></h6>
-                                                    <div class="movie-info">
-                                                        <span class="movie-season">۱ ساعت ۲۰ دقیقه</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 col-lg-4 col-xl-3">
-                                            <div class="movie-item">
-                                                <div class="movie-img">
-                                                    <img src="images/s18.jpg" alt="">
-                                                    <a href="#" class="movie-play"><i class="icon-play-4"></i></a>
-                                                </div>
-                                                <div class="movie-content">
-                                                    <h6 class="movie-title"><a href="#">قسمت ۰۶</a></h6>
-                                                    <div class="movie-info">
-                                                        <span class="movie-season">۱ ساعت ۲۰ دقیقه</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 col-lg-4 col-xl-3">
-                                            <div class="movie-item">
-                                                <div class="movie-img">
-                                                    <img src="images/s18.jpg" alt="">
-                                                    <a href="#" class="movie-play"><i class="icon-play-4"></i></a>
-                                                </div>
-                                                <div class="movie-content">
-                                                    <h6 class="movie-title"><a href="#">قسمت ۰۷</a></h6>
-                                                    <div class="movie-info">
-                                                        <span class="movie-season">۱ ساعت ۲۰ دقیقه</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 col-lg-4 col-xl-3">
-                                            <div class="movie-item">
-                                                <div class="movie-img">
-                                                    <img src="images/s18.jpg" alt="">
-                                                    <a href="#" class="movie-play"><i class="icon-play-4"></i></a>
-                                                </div>
-                                                <div class="movie-content">
-                                                    <h6 class="movie-title"><a href="#">قسمت ۰۸</a></h6>
-                                                    <div class="movie-info">
-                                                        <span class="movie-season">۱ ساعت ۲۰ دقیقه</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div> -->
                             {% for section in serial.sections.all %}
                             <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="pills-season{{ section.id }}" role="tabpanel"
                                 aria-labelledby="pills-season-tab{{ section.id }}" tabindex="0">
@@ -272,10 +29,11 @@
                                             <div class="movie-item">
                                                 <div class="movie-img">
                                                     <img src="{{ episode.baner.url }}" alt="">
-                                                    <a href="" class="movie-play"><i class="icon-play-4"></i></a>
+
+                                                    <a href="{% url 'media:serial-details-episode' serial.slug section.pk episode.pk %}" class="movie-play"><i class="icon-play-4"></i></a>
                                                 </div>
                                                 <div class="movie-content">
-                                                    <h6 class="movie-title"><a href="#">{{ episode.name }}</a></h6>
+                                                    <h6 class="movie-title"><a href="{% url 'media:serial-details-episode' serial.slug section.pk episode.pk %}">{{ episode.name }}</a></h6>
                                                     <div class="movie-info">
                                                         <span class="movie-season">{{ episode.time|date:'G ساعت و i دقیقه' }}</span>
                                                     </div>
