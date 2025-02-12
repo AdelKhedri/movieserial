@@ -179,10 +179,10 @@ class MediaBookmark(models.Model):
 
 
 class Episode(models.Model):
-    name = models.CharField(max_length=200, verbose_name='')
-    baner = models.ImageField(upload_to='', verbose_name='')
-    time = models.TimeField(blank=True, verbose_name='')
-    links = models.ManyToManyField(DownloadLink, verbose_name='')
+    name = models.CharField(max_length=200, verbose_name='قسمت')
+    baner = models.ImageField(upload_to=folder_finder, verbose_name='عکس')
+    time = models.TimeField(blank=True, verbose_name='زمان این قسمت')
+    links = models.ManyToManyField(DownloadLink, verbose_name='لینک ها')
 
     class Meta:
         verbose_name = 'قسمت'

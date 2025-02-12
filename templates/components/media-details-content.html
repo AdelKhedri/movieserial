@@ -10,10 +10,14 @@
             <div class="movie-info">
                 <h4 class="movie-name">
                     {{ media.persian_name }}
+                    {% if media_type == 'serial' and links %}
+                    <span class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-success bg-success-subtle border border-success-subtle rounded-2">{{ episode.name }}</span>
+                    {% endif %}
 
                     <a href="{{ media.trailer }}"
                     class="theme-btn popup-youtube"><span
                     class="fas fa-video"></span>تریلر</a>
+                    {% if media_type == 'movie' %}
                     <a href="{% url 'media:toggle-bookmark-movie' media.slug %}" 
                     {% if request.user.is_authenticated and bookmark %}
                     class="btn btn-success">
@@ -23,6 +27,7 @@
                     ذخیره نشده
                     {% endif %}
                     </a>
+                    {% endif %}
                 </h4>
                 <p>{{ media.english_name }}</p>
                 <p>
@@ -87,9 +92,9 @@
         </div>
         <div class="col-md-7 col-lg-3">
             <div class="movie-download">
-                {% if media_type == 'movie' %}
+                {% if links %}
                 <h5>دانلود:</h5>
-                {% for link in media.links.all %}
+                {% for link in links %}
                 <a href="{{ link.link }}" class="theme-btn" {% if link.size is not null %} title="{{ link.size|filesizeformat }}" {% endif %}>
                     <span class="fas fa-arrow-down-to-arc"></span>
                     دانلود: {{ link.quality }}

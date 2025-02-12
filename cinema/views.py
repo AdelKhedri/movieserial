@@ -123,3 +123,46 @@ class SerialDetailsView(View):
             else:
                 self.context['comment'] = comment_form
         return render(request, self.template_name, self.context)
+
+
+class EpisodeDetailsView(View):
+    template_name = 'cinema/serial-details.html'
+
+    def setup(self, request, *args, **kwargs):
+        self.serial = get_object_or_404(Serial, slug=kwargs['slug'])
+        section = get_object_or_404(self.serial.sections, pk=kwargs['section_pk'])
+        episode = get_object_or_404(section.episodes, pk=kwargs['episode_pk'])
+        comments = Comment.objects.filter(parent__isnull = True, media_type = 'serial', media_id = self.serial.pk, accepted = True)
+        comment_count = Comment.objects.filter(media_type = 'serial', media_id = self.serial.pk, accepted = True).count()
+        is_bookmarked = MediaBookmark.objects.filter(user = request.user, media_type = 'serial', media_id = self.serial.pk).exists() if request.user.is_authenticated else False
+
+        self.context = {
+            'serial': self.serial,
+            'episode': episode,
+            'gener_list': Geners.objects.all(),
+            'country_list': Country.objects.all(), 
+            'comments': comments,
+            'comment_count': comment_count,
+            'comment_form': CommentForm(),
+            'is_bookmarked': is_bookmarked,
+        }
+        return super().setup(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name, self.context)
+
+    def post(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            comment_form = CommentForm(request.POST)
+            if comment_form.is_valid():
+                parent_id = comment_form.cleaned_data.get('parent', None)
+                message = comment_form.cleaned_data['message']
+                comment = Comment(message = message, media_type = 'serial', media_id = self.serial.pk, user=request.user)
+                parent = Comment.objects.filter(id=parent_id).first()
+                if parent:
+                    comment.parent = parent
+                comment.save()
+                self.context['msg'] = 'send comment success'
+            else:
+                self.context['msg'] = comment_form
+        return render(request, self.template_name, self.context)
