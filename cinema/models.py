@@ -216,7 +216,7 @@ class MediaBookmark(models.Model):
     media_types = (('movie', 'فیلم'), ('serial', 'سریال'))
     media_type = models.CharField(max_length=6, choices=media_types, verbose_name='فلیم/سریال')
     media_id = models.IntegerField(verbose_name='ایدی مدیا')
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='کاربر')
+    user = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE, verbose_name='کاربر')
 
     class Meta:
         verbose_name = 'میدیای ذخیره شده'
@@ -229,6 +229,47 @@ class MediaBookmark(models.Model):
         except:
             pass
 
-
     def __str__(self):
         return self.get_media_object().__str__()
+
+
+# Can use Content-type application.
+class MainPageCategory(models.Model):
+    title = models.CharField(max_length=100, verbose_name='موضوع')
+    all_media = models.ManyToManyField(MediaBookmark, help_text='فقط 10 تای اول نمایش داده میشه', verbose_name='مدیا ها')
+    more_category_link = models.URLField(verbose_name='لینک مدیا های بیشتر')
+    style_display_types = (('not-scroll', 'بدون اسکرول'), ('scroll', 'با اسکرول'))
+    style_display = models.CharField(max_length=10, choices=style_display_types, verbose_name='نوع نمایش دسته بندی')
+
+    class Meta:
+        verbose_name = 'دسته بندی صفحه اصلی'
+        verbose_name_plural = 'دسته بندی های صفحه اصلی'
+        ordering = ['id']
+
+    def get_book_limited(self):
+        return self.all_media.all()[:10]
+
+    def __str__(self):
+        return '{}:{}'.format(self.title, self.all_media.count())
+
+
+class MainPageCarousel(models.Model):
+    title = models.CharField(max_length=150, verbose_name='توضیح کوتاه')
+    media_types = (('movie', 'سینمایی'), ('serial', 'سریال'))
+    media_type = models.CharField(max_length=6, choices=media_types, verbose_name='نوع مدیا')
+    media_id = models.PositiveIntegerField(verbose_name='مدیا آی دی')
+    background_image = models.ImageField(verbose_name='عکس بک گراند', help_text='مستطیلی')
+
+    class Meta:
+        verbose_name = 'مدیا کاروسل صفحه خانه'
+        verbose_name_plural = 'مدیا های کاروسل صفحه خانه'
+        ordering = ['id']
+
+    def get_media_object(self):
+        try:
+            return Movie.objects.get(id=self.media_id) if self.media_type == 'movie' else Serial.objects.get(id=self.media_id)
+        except:
+            pass
+
+    def __str__(self):
+        return self.title

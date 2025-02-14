@@ -1,0 +1,18 @@
+<div class="movie-item">
+    <span class="movie-quality">{{ media.quality}}</span>
+    <div class="movie-img">
+        <img src="{{ media.baner.url }}" alt="">
+        <a href="{{ media.get_absolute_url }}" class="movie-play"><i class="icon-play-3"></i></a>
+    </div>
+    <div class="movie-content">
+        <h6 class="movie-title"><a href="movie-single.html">{{ media.persian_name}}</a></h6>
+        <div class="movie-info">
+            <span class="movie-time">{{ media.time|date:'G ساعت و i دقیقه' }}</span>
+            <div class="movie-genre">
+                {% for gener in media.geners.all %}
+                <a href="#">{{ gener.name }}</a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>

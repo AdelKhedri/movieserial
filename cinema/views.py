@@ -1,11 +1,11 @@
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
-from django.views.generic import View
+from django.views.generic import View, ListView
 from django.utils import timezone
 from django.db.models import Q
 from django.core.paginator import Paginator
-from .models import Country, MediaBookmark, Movie, Comment, Geners, Serial
+from .models import Country, MainPageCarousel, MainPageCategory, MediaBookmark, Movie, Comment, Geners, Serial
 from .forms import CommentForm
 from .filters import MovieFilter, SerialFilter
 
@@ -179,5 +179,13 @@ class EpisodeDetailsView(View):
         return render(request, self.template_name, self.context)
 
 
-class SerialFilterView(View):
-    pass
+class Home(ListView):
+    template_name = 'cinema/index.html'
+    queryset = MainPageCategory.objects.all()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['carousel_list'] = MainPageCarousel.objects.all()
+        context['gener_list'] = Geners.objects.all()
+        context['country_list'] = Country.objects.all()
+        return context

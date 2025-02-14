@@ -1,11 +1,11 @@
 from django.contrib import admin
-from .models import Movie, Geners, DownloadLink, Agents, Comment, Country, MediaBookmark, Serial, Section, Episode
+from .models import Movie, Geners, DownloadLink, Agents, Comment, Country, MediaBookmark, Serial, Section, Episode, MainPageCategory, MainPageCarousel
 from django.utils.html import format_html
 
 
 @admin.register(Movie)
 class MovieRegister(admin.ModelAdmin):
-    list_display = ['persian_name', 'year_create', 'get_countrys', 'slug', 'get_geners', 'imdb_link',  'get_image', ]
+    list_display = ['id', 'persian_name', 'year_create', 'get_countrys', 'slug', 'get_geners', 'imdb_link',  'get_image', ]
     filter_horizontal = ['stars', 'geners', 'links', 'likes', 'dislikes', 'related_movies', 'countrys']
     list_filter = ['geners']
     search_fields = ['perisan_name', 'english_name', 'discription']
@@ -107,9 +107,30 @@ class SerialRegister(admin.ModelAdmin):
     def get_countrys(self, obj):
         return format_html(''.join(
             [f'<span style="background-color: #38ff28; border-radius: 7px;padding: 3px 6px; margin-right:4px;">{countrys.name}</span>' for countrys in obj.countrys.all()]
-            ))
+        ))
     
     def get_geners(self, obj):
         return format_html(''.join(
             [f'<span style="background-color: #38ff28; border-radius: 7px;padding: 3px 6px; margin-right:4px;">{gener.name}</span>' for gener in obj.geners.all()]
-            ))
+        ))
+
+
+@admin.register(MainPageCategory)
+class MainPageCategoryRegister(admin.ModelAdmin):
+    list_display = [field.name for field in MainPageCategory._meta.fields] + ['get_media_count']
+    list_display_links = ['id', 'title']
+    filter_horizontal = ['all_media']
+    search_fields = ['title']
+
+    @admin.display(description='تعداد مدیا ها')
+    def get_media_count(self, obj):
+        return format_html(f'<span style="background-color: orange;padding:5px 10px;border-radius:5px">{obj.all_media.all().count()}</span>')
+
+
+@admin.register(MainPageCarousel)
+class MainPageCarouselRegister(admin.ModelAdmin):
+    list_display = ['title', 'media_type', 'media_id', 'get_background_image']
+
+    @admin.display(description='عکس بک گراند کوچکشده')
+    def get_background_image(self, obj):
+        return format_html(f'<img style="width:320px;height:214px;" src="{ obj.background_image.url }">')
