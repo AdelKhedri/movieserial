@@ -1,0 +1,105 @@
+{% extends 'cinema/base-site.html' %}
+{% load static %}
+
+{% block title %}خانه | نت موی{% endblock %}
+{% block content %}
+    <main class="main">
+
+        <div class="hero-section hs-1">
+            <div class="container">
+                <div class="hero-slider owl-carousel owl-theme">
+                    {% for add_media in carousel_list %}
+                    <div class="hero-single" style="background: url({{ add_media.background_image.url }})" dir="rtl">
+                        <div class="container">
+                            <div class="row align-items-center">
+                                <div class="col-md-12 col-lg-6">
+                                    <div class="hero-content">
+                                        <h6 class="hero-sub-title" data-animation="fadeInDown" data-delay=".25s">{{ add_media.title }}</h6>
+                                        <h1 class="hero-title" data-animation="fadeInLeft" data-delay=".50s">
+                                            {{ add_media.get_media_object.persian_name }}
+                                        </h1>
+                                        <div class="hero-info" data-animation="fadeInDown" data-delay=".75s">
+                                            <span class="rating"><span><i class="far fa-star"></i>{{ add_media.get_media_object.imdb_point }}</span href="#">IMDB</span>
+                                            <span class="year">{{ add_media.get_media_object.year_create }}</span>
+                                            <span class="time">{{ add_media.get_media_object.time|date:'G ساعت و i دقیقه' }}</span>
+                                            <div class="genre">
+                                                {% for gener in add_media.get_media_object.geners.all %}
+                                                <a href="#">{{ gener.name }}</a>
+                                                {% if not forloop.last %}
+                                                <span class="mx-1">|</span>
+                                                {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        <p data-animation="fadeInRight" data-delay="1s">
+                                            {% if add_media.get_media_object.description %}
+                                            {{ add_media.get_media_object.description }}
+                                            {% else %}
+                                            <div style="height: 100px;"></div>
+                                            {% endif %}
+                                        </p>
+                                        <div class="hero-btn" data-animation="fadeInUp" data-delay="1.25s">
+                                            <a href="{{ add_media.get_media_object.get_absolute_url }}" class="theme-btn"><span class="icon-play-3"></span>مشاهده</a>
+                                            <a href="{{ add_media.get_media_object.get_absolute_url }}" class="theme-btn theme-btn2">اطلاعات بیشتر</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 col-lg-6">
+                                    <div class="hero-video" data-animation="fadeInLeft" data-delay=".25s">
+                                        <a href="{{ add_media.get_media_object.trailer }}"
+                                            class="hero-video-btn popup-youtube">
+                                            <span class="video-icon"><i class="icon-video-3"></i></span>
+                                            <span class="video-text">دیدن تریلر</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+
+        {% for category in object_list %}
+        <div class="movie-area pt-80" dir="rtl">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="site-heading-inline">
+                            <h2 class="site-title">{{ category.title }}</h2>
+                            <a href="{{ category.more_category_link }}" class="theme-btn">بیشتر<i class="far fa-angles-left"></i></a>
+                        </div>
+                    </div>
+                </div>
+                {% if category.style_display == 'not-scroll' %}
+                <div class="row row-cols-xl-5">
+                    {% for media in category.get_book_limited %}
+                    <div class="col-6 col-md-4 col-lg-3 col-xl">
+                        {% include 'components/media.html' with media=media.get_media_object %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="movie-slider owl-carousel owl-theme"  dir="ltr">
+                    {% for media in category.get_book_limited %}
+                    {% include 'components/media.html' with media=media.get_media_object %}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+
+
+        <div class="movie-area pt-50" dir="rtl">
+            <div class="container">
+                
+            </div>
+        </div>
+
+        <!-- BLOG -->
+
+    </main>
+{% endblock %}
