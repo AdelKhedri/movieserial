@@ -6,7 +6,8 @@ from django.utils import timezone
 from django.db.models import Q
 from django.core.paginator import Paginator
 from .models import Country, MainPageCarousel, MainPageCategory, MediaBookmark, Movie, Comment, Geners, Serial
-from .forms import CommentForm
+from .forms import CommentForm, ContactUsForm
+from user.forms import RecaptchaForm
 from .filters import MovieFilter, SerialFilter
 
 
@@ -189,3 +190,31 @@ class Home(ListView):
         context['gener_list'] = Geners.objects.all()
         context['country_list'] = Country.objects.all()
         return context
+
+
+class ContactUsView(View):
+    template_name = 'cinema/contact-us.html'
+
+    def setup(self, request, *args, **kwargs):
+        self.context = {
+            'form': ContactUsForm(),
+            'gener_list': Geners.objects.all(),
+            'recaptcha_form': RecaptchaForm()
+        }
+        return super().setup(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name, self.context)
+
+    def post(self, request, *args, **kwargs):
+        recaptcha_form = RecaptchaForm(request.POST)
+        if recaptcha_form.is_valid():
+            form_contact_us = ContactUsForm(request.POST)
+            if form_contact_us.is_valid():
+                form_contact_us.save()
+                self.context['msg'] = 'success full'
+            else:
+                self.context['form'] = form_contact_us
+        else:
+            self.context['msg'] = 'recaptcha failed'
+        return render(request, self.template_name, self.context)
