@@ -18,7 +18,7 @@
                     class="theme-btn popup-youtube"><span
                     class="fas fa-video"></span>تریلر</a>
                     <a 
-                    {% if links %}
+                    {% if media_type == 'serial' and links %}
                     href="{{ media.get_bookmark_url }}?next={% url 'media:serial-details-episode' media.slug section.pk episode.pk %}" 
                     {% else %}
                     href="{{ media.get_bookmark_url }}" 
