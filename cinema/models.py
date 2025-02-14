@@ -273,3 +273,17 @@ class MainPageCarousel(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class ContactUs(models.Model):
+    name = models.CharField(max_length=150, verbose_name='')
+    email = models.EmailField(verbose_name='')
+    subject = models.CharField(max_length=300, verbose_name='')
+    message = models.TextField(verbose_name='')
+
+    class Meta:
+        verbose_name = 'پیام تماس با ما'
+        verbose_name_plural = 'پیام های تماس با ما'
+
+    def __str__(self):
+        return self.name

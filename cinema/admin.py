@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Movie, Geners, DownloadLink, Agents, Comment, Country, MediaBookmark, Serial, Section, Episode, MainPageCategory, MainPageCarousel
+from .models import Movie, Geners, DownloadLink, Agents, Comment, Country, MediaBookmark, Serial, Section, Episode, MainPageCategory, MainPageCarousel, ContactUs
 from django.utils.html import format_html
 
 
@@ -134,3 +134,8 @@ class MainPageCarouselRegister(admin.ModelAdmin):
     @admin.display(description='عکس بک گراند کوچکشده')
     def get_background_image(self, obj):
         return format_html(f'<img style="width:320px;height:214px;" src="{ obj.background_image.url }">')
+
+
+@admin.register(ContactUs)
+class ContactUsRegister(admin.ModelAdmin):
+    list_display = [field.name for field in ContactUs._meta.fields]
