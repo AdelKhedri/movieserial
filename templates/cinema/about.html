@@ -1,0 +1,345 @@
+{% extends 'cinema/base-site.html' %}
+{% load static %}
+{% block title %}درباره ما | نت موی{% endblock %}
+{% block content %}
+    <main class="main">
+
+        <div class="site-breadcrumb" style="background: url({% static 'images/01-bg-ganr.jpeg' %})">
+            <div class="container">
+                <h2 class="breadcrumb-title">درباره ما</h2>
+                <ul class="breadcrumb-menu" dir="rtl">
+                    <li><a href="{% url 'home' %}">خانه</a></li>
+                    <li class="active">درباره ما</li>
+                </ul>
+            </div>
+        </div>
+
+
+        <div class="about-area py-120" dir="rtl">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-6">
+                        <div class="about-left wow fadeInLeft" data-wow-delay=".25s">
+                            <div class="about-img">
+                                <img src="{% static 'images/about-01.jpeg' %}" alt="">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="about-right wow fadeInRight" data-wow-delay=".25s">
+                            <div class="site-heading mb-3">
+                                <span class="site-title-tagline">درباره ما</span>
+                                <h2 class="site-title">
+                                    ما بهترین انتخاب برای شما هستیم <span>دانلود بدون دردسر و مستقیم</span> .
+                                </h2>
+                            </div>
+                            <p class="about-text">
+                                انواع مختلفی از معابر موجود است، اما اکثریت آن ها آسیب دیده اند
+                                تغییر به شکلی توسط طنز تزریقی کلمات تصادفی که یکنواخت به نظر نمی رسند
+                                کمی قابل باور اگر می خواهید از پیام استفاده کنید، باید مطمئن شوید که چیزی وجود دارد
+                                شرم آور اولین ژنراتور واقعی در اینترنت.
+                            </p>
+                            <div class="about-content">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="about-item">
+                                            <div class="about-item-icon">
+                                                <i class="icon-computer-play-1"></i>
+                                            </div>
+                                            <div class="about-item-content">
+                                                <h5>دارای امتیاز بالا</h5>
+                                                <p>این یک واقعیت طولانی است که حواس خواننده پرت می شود.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="about-item">
+                                            <div class="about-item-icon">
+                                                <i class="icon-computer-play-2"></i>
+                                            </div>
+                                            <div class="about-item-content">
+                                                <h5>رضایت کامل مشتری</h5>
+                                                <p>این یک واقعیت طولانی است که حواس خواننده پرت می شود.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="about.html" class="theme-btn mt-4">مشاهده بیشتر<i
+                                    class="fas fa-arrow-right-long"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="counter-area pt-40 pb-40" style="background-image: url({% static 'images/01_4.jpg' %});" dir="rtl">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="counter-box">
+                            <div class="icon">
+                                <i class="icon-computer-play-1"></i>
+                            </div>
+                            <div>
+                                <span class="counter" data-count="+" data-to="900" data-speed="3000" style="  font-family: 'vazir-number';">۹۰۰</span>
+                                <h6 class="title">+ مجموع فیلم ها </h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="counter-box">
+                            <div class="icon">
+                                <i class="icon-rate"></i>
+                            </div>
+                            <div>
+                                <span class="counter" data-count="+" data-to="2500" data-speed="3000" style="  font-family: 'vazir-number';">۲۵۰۰</span>
+                                <h6 class="title">+ رضایت کاربران </h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="counter-box">
+                            <div class="icon">
+                                <i class="icon-user"></i>
+                            </div>
+                            <div>
+                                <span class="counter" data-count="+" data-to="300" data-speed="3000" style="  font-family: 'vazir-number';">۲۵۰</span>
+                                <h6 class="title">+ تعداد اعضای تیم </h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="counter-box">
+                            <div class="icon">
+                                <i class="icon-medal-1"></i>
+                            </div>
+                            <div>
+                                <span class="counter" data-count="+" data-to="30" data-speed="3000" style="  font-family: 'vazir-number';">۳۰</span>
+                                <h6 class="title">+ جوایز کشوری </h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="process-area py-80" dir="rtl">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-6 mx-auto">
+                        <div class="site-heading text-center">
+                            <span class="site-title-tagline">پردازش</span>
+                            <h2 class="site-title">چگونه موپلی ما <span>کار میکند</span></h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 col-lg-4 col-xl-3">
+                        <div class="process-item">
+                            <span>۰۱</span>
+                            <div class="icon">
+                                <i class="icon-stream-1"></i>
+                            </div>
+                            <h4>ساخت اکانت</h4>
+                            <p>این یک واقعیت ثابت است که حواس خواننده پرت می شود.</p>                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 col-xl-3">
+                        <div class="process-item">
+                            <span>۰۲</span>
+                            <div class="icon">
+                                <i class="icon-subscription"></i>
+                            </div>
+                            <h4>انتخاب پلن</h4>
+                            <p>این یک واقعیت ثابت است که حواس خواننده پرت می شود.</p>                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 col-xl-3">
+                        <div class="process-item">
+                            <span>03</span>
+                            <div class="icon">
+                                <i class="icon-stream-3"></i>
+                            </div>
+                            <h4>پیدا کردن فیلم</h4>
+                            <p>این یک واقعیت ثابت است که حواس خواننده پرت می شود.</p>                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 col-xl-3">
+                        <div class="process-item">
+                            <span>۰۴</span>
+                            <div class="icon">
+                                <i class="icon-stream-4"></i>
+                            </div>
+                            <h4>از فیلم لذت ببرید</h4>
+                            <p>این یک واقعیت ثابت است که حواس خواننده پرت می شود.</p>                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="choose-area bg py-80" dir="rtl">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-6">
+                        <div class="choose-content wow fadeInUp" data-wow-delay=".25s">
+                            <div class="site-heading mb-3">
+                                <span class="site-title-tagline">چرا ما را انتخاب کنید</span>
+                                <h2 class="site-title">
+                                    ما به رضایت <span>کاربران</span> خودمان اهمیت می دهیم
+                                </h2>
+                            </div>
+                            <p>
+                                انواع مختلفی از معابر موجود است اما اکثریت آن ها را دارند
+                                با تزریق طنز واژگان تصادفی به شکلی دچار تغییر شده است که اینطور نیست
+                                نگاه حتی تمایل به تکرار از پیش تعریف شده کمی باورپذیر است.
+                            </p>
+                            <div class="choose-wrapper">
+                                <div class="choose-item">
+                                    <div class="choose-icon">
+                                        <i class="icon-stream-3"></i>
+                                    </div>
+                                    <div class="choose-item-content">
+                                        <h4>بهترنی پلتفرم استریم</h4>
+                                        <p>تنوع‌های زیادی از قسمت‌ها وجود دارد که اکثر آنها در دسترس هستند
+                                            دچار تغییر طنز تزریق شده اند.</p>
+                                    </div>
+                                </div>
+                                <div class="choose-item">
+                                    <div class="choose-icon">
+                                        <i class="icon-stream-4"></i>
+                                    </div>
+                                    <div class="choose-item-content">
+                                        <h4>استریم بدون وقفه</h4>
+                                        <p>تنوع‌های زیادی از قسمت‌ها وجود دارد که اکثر آنها در دسترس هستند
+                                            دچار تغییر طنز تزریق شده اند.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="choose-img wow fadeInRight" data-wow-delay=".25s">
+                            <img src="{% static 'images/01_1.jpg' %}" alt="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="team-area py-80">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-6 mx-auto">
+                        <div class="site-heading text-center">
+                            <span class="site-title-tagline">تیم ما</span>
+                            <h2 class="site-title"> با کارشناس ما در<span> تماس باشید</span> </h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    {% for user in team %}
+                    <div class="col-md-6 col-lg-4 col-xl-3">
+                        <div class="team-item wow fadeInUp" data-wow-delay=".25s">
+                            <div class="team-img">
+                                <img src="{{ user.picture.url }}" alt="thumb">
+                            </div>
+                            <div class="team-info">
+                                <h5><a href="{{ user.social_github }}">{{ user.name}}</a></h5>
+                                <span>{{ user.role }}</span>
+                            </div>
+                            <div class="team-social">
+                                <a href="{{ user.social_facebook }}"><i class="fab fa-facebook-f"></i></a>
+                                <a href="{{ user.social_instagram }}"><i class="fab fa-instagram"></i></a>
+                                <a href="{{ user.social_linkedin }}"><i class="fab fa-linkedin-in"></i></a>
+                                <a href="{{ user.social_github }}"><i class="fab fab fa-github"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+
+        <div class="cta-area pb-90" dir="rtl">
+            <div class="container">
+                <div class="cta-wrapper" style="background-image: url({% static 'images/01_3.jpg' %});" >
+                    <div class="row align-items-center">
+                        <div class="col-lg-7 mx-auto">
+                            <div class="cta-content">
+                                <h1>دوره آزمایشی رایگان ۳۰ روزه را شروع کنید.</h1>
+                                <p>این یک واقعیت ثابت طولانی مدت است که خواننده با محتوای خواندنی پرت می شود.</p>
+                                <a href="#" class="theme-btn">شروع کنید<i class="fas fa-arrow-right-long"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="feature-area bg py-80" dir="rtl">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-7 mx-auto">
+                        <div class="site-heading text-center">
+                            <span class="site-title-tagline">ویژگی ها</span>
+                            <h2 class="site-title">بیاید با هم مشاهده کنیم <span>ویژگی ها </span></h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="feature-wrapper">
+                    <div class="row">
+                        <div class="col-md-6 col-lg-4 col-xl-3">
+                            <div class="feature-item wow fadeInUp" data-wow-delay=".25s">
+                                <span class="count">۰۱</span>
+                                <div class="feature-icon">
+                                    <i class="icon-stream-1"></i>
+                                </div>
+                                <h4 class="feature-title">استریم فول اچ دی</h4>
+                                <p>این یک واقعیت ثابت شده است که خواننده از خواندنی ها حواسش پرت می شود
+                                    محتوای صفحه به دنبال نقطه چیدمان.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4 col-xl-3">
+                            <div class="feature-item wow fadeInDown" data-wow-delay=".25s">
+                                <span class="count">۰۲</span>
+                                <div class="feature-icon">
+                                    <i class="icon-server-2"></i>
+                                </div>
+                                <h4 class="feature-title">بدون هیچ زحمتی استریم</h4>
+                                <p>این یک واقعیت ثابت شده است که خواننده از خواندنی ها حواسش پرت می شود
+                                    محتوای صفحه به دنبال نقطه چیدمان.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4 col-xl-3">
+                            <div class="feature-item wow fadeInUp" data-wow-delay=".25s">
+                                <span class="count">۰۳</span>
+                                <div class="feature-icon">
+                                    <i class="icon-safe"></i>
+                                </div>
+                                <h4 class="feature-title">استریم ایمن و با دقت</h4>
+                                <p>این یک واقعیت ثابت شده است که خواننده از خواندنی ها حواسش پرت می شود
+                                    محتوای صفحه به دنبال نقطه چیدمان.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4 col-xl-3">
+                            <div class="feature-item wow fadeInDown" data-wow-delay=".25s">
+                                <span class="count">۰۴</span>
+                                <div class="feature-icon">
+                                    <i class="icon-money-bag"></i>
+                                </div>
+                                <h4 class="feature-title">قیمت قابل قبول</h4>
+                                <p>این یک واقعیت ثابت شده است که خواننده از خواندنی ها حواسش پرت می شود
+                                    محتوای صفحه به دنبال نقطه چیدمان.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+{% endblock %}

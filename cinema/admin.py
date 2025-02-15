@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Movie, Geners, DownloadLink, Agents, Comment, Country, MediaBookmark, Serial, Section, Episode, MainPageCategory, MainPageCarousel, ContactUs
+from .models import Movie, Geners, DownloadLink, Agents, Comment, Country, MediaBookmark, Serial, Section, Episode, MainPageCategory, MainPageCarousel, ContactUs, Team
 from django.utils.html import format_html
 
 
@@ -139,3 +139,8 @@ class MainPageCarouselRegister(admin.ModelAdmin):
 @admin.register(ContactUs)
 class ContactUsRegister(admin.ModelAdmin):
     list_display = [field.name for field in ContactUs._meta.fields]
+
+
+@admin.register(Team)
+class TeamRegister(admin.ModelAdmin):
+    list_display = [field.name for field in Team._meta.fields]
