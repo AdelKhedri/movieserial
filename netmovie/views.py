@@ -46,3 +46,13 @@ class ContactUsView(View):
         else:
             self.context['msg'] = 'recaptcha failed'
         return render(request, self.template_name, self.context)
+
+
+def termsView(request):
+    context = {
+        'gener_list': Geners.objects.all(),
+        'country_list': Country.objects.all(),
+    }
+    return render(request, 'cinema/terms.html', context)
+
+
