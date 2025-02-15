@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Notification, Profile, User, ForgotPasswordLink
+from .models import HistoryOfSubscription, Notification, Package, Profile, User, ForgotPasswordLink
 from django.utils.html import format_html
 
 
@@ -33,3 +33,5 @@ class Profileister(admin.ModelAdmin):
         profile_img = obj.picture.url if obj.picture else ''
         return format_html(f'<img src="{profile_img}" style="width:100px;height:100px;border-radius:50px;">')
 
+admin.site.register(Package)
+admin.site.register(HistoryOfSubscription)

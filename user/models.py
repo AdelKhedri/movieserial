@@ -41,6 +41,7 @@ class User(AbstractUser):
     special_time = models.DateTimeField(null=True, verbose_name="زمان اشتراک")
     email = models.EmailField(unique=True, verbose_name="ایمیل")
     username = models.CharField(max_length=150, validators=[validate_username], unique=True, verbose_name='نام کاربری')
+    balance = models.IntegerField(default=900000, verbose_name='موجودی')
 
     REQUIRED_FIELDS = ["number", "email"]
     objects = Manager()
@@ -99,3 +100,39 @@ class Notification(models.Model):
     def __str__(self):
         return self.user.__str__()
 
+
+class Package(models.Model):
+    name = models.CharField(max_length=150, verbose_name='موضوع')
+    price = models.IntegerField(verbose_name='قیمت')
+    description = models.TextField(blank=True, verbose_name='توضیحات')
+    days = models.IntegerField(verbose_name='روز ها')
+    tax = models.IntegerField(default=0, verbose_name='مالیات')
+    discount = models.IntegerField(blank=True, null=True, verbose_name='تخفیف')
+    color_types = (('red', 'قرمز'), ('green', 'سبز'), ('sky', 'آبی آسمانی'))
+    color = models.CharField(max_length=5, choices=color_types, default='sky', verbose_name='رنگ')
+
+    def get_final_price(self):
+        return self.price + self.tax if self.discount is None else self.price + self.tax - self.discount
+
+    class Meta:
+        verbose_name = 'پکیج'
+        verbose_name_plural = 'پکیج ها'
+
+    def __str__(self):
+        return self.name
+
+
+class HistoryOfSubscription(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='کاربر')
+    package = models.ForeignKey(Package, on_delete=models.CASCADE, verbose_name='پکیج')
+    time = models.DateTimeField(auto_now_add=True, verbose_name='زمان')
+    payed = models.BooleanField(default=False, verbose_name='وضعیت پرداخت')
+    final_price = models.IntegerField(verbose_name='قیمت نهایی')
+    days = models.IntegerField(verbose_name='روز ها')
+
+    class Meta:
+        verbose_name = 'سابقه پکیج'
+        verbose_name_plural = 'سابقه پکیج ها'
+
+    def __str__(self):
+        return self.package.__str__()

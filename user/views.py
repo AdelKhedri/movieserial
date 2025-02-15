@@ -1,12 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import View
 from django.contrib.auth import authenticate, login, logout
-
 from cinema.models import Country, Geners, MediaBookmark
-from .models import Profile, User, ForgotPasswordLink, Notification
+from .models import HistoryOfSubscription, Package, Profile, User, ForgotPasswordLink, Notification
 from .forms import (LoginForm, ProfileUpdateForm, RegisterForm, RecaptchaForm, ChangePasswordForgotPasswordFrom, UserForm,
                     ChangePasswordForm)
-from django.http import HttpResponse
 from django.conf import settings
 from random import randint
 from .otp import OtpCode
@@ -202,7 +200,10 @@ class DashboardView(LoginRequiredMixin, View):
                 'profile_form': ProfileUpdateForm(instance=request.user.profile),
                 'user_form': UserForm(instance=request.user),
                 'user': request.user,
-                'notification_counts': Notification.objects.filter(user=request.user, status='new').count()
+                'notification_counts': Notification.objects.filter(user=request.user, status='new').count(),
+                'bookmark_count': MediaBookmark.objects.filter(user=request.user).count(),
+                'now': timezone.now(),
+                'last_subscription': HistoryOfSubscription.objects.filter(user=request.user).last()
             }
         return super().setup(request, *args, **kwargs)
 
@@ -236,7 +237,10 @@ class ChangePasswordView(LoginRequiredMixin, View):
         if request.user.is_authenticated:
             self.context = {
             'change_password_form': ChangePasswordForm(),
-            'notification_counts': Notification.objects.filter(user=request.user, status='new').count()
+            'notification_counts': Notification.objects.filter(user=request.user, status='new').count(),
+            'bookmark_count': MediaBookmark.objects.filter(user=request.user).count(),
+            'now': timezone.now(),
+            'last_subscription': HistoryOfSubscription.objects.filter(user=request.user).last()
         }
         return super().setup(request, *args, **kwargs)
 
@@ -269,6 +273,9 @@ class NotificationView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['notification_counts'] = self.get_queryset().filter(status='new').count()
+        context['now']= timezone.now()
+        context['last_subscription']= HistoryOfSubscription.objects.filter(user=self.request.user).last()
+        context['bookmark_count'] = MediaBookmark.objects.filter(user=self.request.user).count()
         return context
 
 
@@ -279,6 +286,9 @@ class NotificationDetailsView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['bookmark_count'] = MediaBookmark.objects.filter(user=self.request.user).count()
+        context['now'] = timezone.now()
+        context['last_subscription'] = HistoryOfSubscription.objects.filter(user=self.request.user).last()
         notif = self.get_queryset().first()
         if notif.status == 'new':
             notif.status = 'read'
@@ -307,14 +317,52 @@ class BookmarkView(LoginRequiredMixin, ListView):
         context.update({
             'gener_list': Geners.objects.all(),
             'country_list': Country.objects.all(),
+            'bookmark_count': MediaBookmark.objects.filter(user=self.request.user).count(),
+            'now': timezone.now(),
+            'last_subscription': HistoryOfSubscription.objects.filter(user=self.request.user).last()
         })
         return context
+
+
+class SubscriptionView(LoginRequiredMixin, View):
+    template_name = 'user/subscription.html'
+
+    def setup(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            self.context = {
+                'gener_list': Geners.objects.all(),
+                'country_list': Country.objects.all(),
+                'package_list': Package.objects.all(),
+                'bookmark_count': MediaBookmark.objects.filter(user=request.user).count(),
+                'subscription': 'active',
+                'now': timezone.now(),
+            }
+        if request.user.special_time:
+            self.context['last_subscription'] = HistoryOfSubscription.objects.filter(user=request.user).last()
+        return super().setup(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        pk = request.GET.get('package', None)
+        if pk:
+            package = get_object_or_404(Package, id=pk)
+            user = request.user
+            time = timedelta(days=package.days)
+
+            if user.balance >= package.get_final_price():
+                if user.special_time is None or user.special_time < timezone.now():
+                    user.special_time = timezone.now() + time
+                else:
+                    user.special_time += time
+                user.balance -= package.get_final_price()
+                user.save()
+                HistoryOfSubscription.objects.create(user=request.user, package = package, payed = True, final_price = package.get_final_price(), days=package.days)
+                self.context['msg'] = 'success'
+            else:
+                self.context['msg'] = 'failed'
+        return render(request, self.template_name, self.context)
 
 
 def logoutView(request):
     if request.user.is_authenticated:
         logout(request)
     return redirect('user:login')
-
-def home(request):
-    return HttpResponse(f'{request.user}')

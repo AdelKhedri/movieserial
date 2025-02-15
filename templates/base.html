@@ -70,8 +70,8 @@
                             <div class="intro-right">
                                 <div class="intro-item">
                                     <div class="intro-content">
-                                        <h4 class="intro-amount">۷۹۰,۰۰۰<span>/ماهانه</span></h4>
-                                        <p>اکانت پرمیوم</p>
+                                        <h4 class="intro-amount">{{ last_subscription.final_price|default:'بدون اشتراک' }}</h4>
+                                        <p>{{ last_subscription.package.name|default:'' }}</p>
                                     </div>
                                     <div class="intro-icon">
                                         <i class="icon-subscription"></i>
@@ -79,8 +79,8 @@
                                 </div>
                                 <div class="intro-item">
                                     <div class="intro-content">
-                                        <h4>۲۰</h4>
-                                        <p>علاقه مندی ها</p>
+                                        <h4>{{ request.user.special_time|date:'Y/m/d H:i:s' }}</h4>
+                                        <p>اشتراک {% if request.user.special_time > now %}<span class="p-1 rounded rounded-3 text-black bg-success ">فعال</span>{% else %} <span class="p-1 text-black bg-danger rounded rounded-3">غیر فعال</span>{% endif %}</p>
                                     </div>
                                     <div class="intro-icon">
                                         <i class="icon-computer-play-1"></i>
@@ -88,7 +88,7 @@
                                 </div>
                                 <div class="intro-item">
                                     <div class="intro-content">
-                                        <h4>۴۳۰,۰۰۰</h4>
+                                        <h4>{{ request.user.balance }}</h4>
                                         <p>موجودی حساب</p>
                                     </div>
                                     <div class="intro-icon">
@@ -115,7 +115,7 @@
                                 <a href="{% url 'user:change-password' %}" class="nav-link {% block change_password %}" {% endblock %}>تغییر پسورد</a>
                             </li>
                             <li class="nav-item">
-                                <a href="" class="nav-link {% block packages %}" {% endblock %}>خرید پکیج</a>
+                                <a href="{% url 'user:subscription' %}" class="nav-link {% block subscription %}" {% endblock %}>خرید پکیج</a>
                             </li>
                             <li class="nav-item ms-auto">
                                 <a href="{% url 'user:logout' %}" class="nav-link"><i class="far fa-sign-out"></i>خروج</a>

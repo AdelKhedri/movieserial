@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load humanize static %}
+{% block title %}خرید پکیج | نت موی{% endblock %}
+{% block packages %}text-success" style="text-decoration: underline;"{% endblock %}
+
+{% block content %}
+<div class="pricing-area py-80" dir="rtl">
+    <div class="container">
+        {% if msg == 'success' %}
+        <div class="row alert alert-success">خرید موفقیت آمیز بود</div>
+        {% endif %}
+        <div class="row">
+            <div class="col-lg-6 mx-auto">
+                <div class="site-heading text-center">
+                    <span class="site-title-tagline">پلن های ما</span>
+                    <h2 class="site-title">   پلن اشتراک خود را<span> انتخاب کنید </span></h2>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            {% for package in package_list %}
+            <div class="col-md-6 col-lg-4 col-xl-3">
+                <div class="pricing-item {% if package.color == 'red' %} active {% elif package.color == 'green' %} {% endif %} wow fadeInUp" data-wow-delay=".25s">
+                    <div class="pricing-header">
+                        <h4 class="pricing-title">{{ package.name }}</h4>
+                    </div>
+                    <div class="pricing-icon">
+                        <i class="icon-subscription"></i>
+                    </div>
+                    <div class="pricing-price">
+                        <h1 class="pricing-amount">{{ package.get_final_price|intcomma }}<span class="pricing-duration">روزه{{ package.days }}</span></h1>
+                        <p>{{ package.price|intcomma }}</p>
+                    </div>
+                    <div class="pricing-feature">
+                        <ul>
+                            {% for line in package.description.splitlines %}
+                            <li>{{ line }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <a href="{% url 'user:subscription' %}?package={{ package.id }}" class="theme-btn">خرید {{ package.get_final_price }}<i class="fas fa-arrow-right-long"></i></a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
