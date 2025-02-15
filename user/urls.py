@@ -1,7 +1,8 @@
 from django.urls import path
 from .views import (
     LoginView, RegisterView, ConfirmNumberView, ForgotPasswordView, ForgotPasswordChangePasswordView, DashboardView,
-    logoutView, ChangePasswordView, NotificationView, NotificationDetailsView, NotificationDeleteView, BookmarkView)
+    logoutView, ChangePasswordView, NotificationView, NotificationDetailsView, NotificationDeleteView, BookmarkView,
+    SubscriptionView)
 
 
 app_name = 'user'
@@ -19,5 +20,6 @@ urlpatterns = [
     path('profile/notification/<int:pk>', NotificationDetailsView.as_view(), name='notification-details'),
     path('profile/notification/<int:pk>/delete', NotificationDeleteView.as_view(), name='notification-delete'),
     path('profile/bookmarks', BookmarkView.as_view(), name='user-bookmarks'),
+    path('profile/subscription', SubscriptionView.as_view(), name='subscription'),
     path('logout/', logoutView, name='logout'),
 ]

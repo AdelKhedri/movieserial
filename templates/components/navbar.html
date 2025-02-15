@@ -103,24 +103,21 @@
                         {% endif %}
                     </ul>
                     <div class="nav-right">
-                        <div class="nav-search-wrap">
-                            <div class="search-btn">
-                                <button type="button" class="nav-right-link search-box-outer"><i
-                                        class="icon-search"></i></button>
-                            </div>
-
-                            <div class="search-area">
-                                <form action="#">
-                                    <div class="form-group">
-                                        <input type="text" class="form-control"
-                                            placeholder="کلمه را وارد نمایید...">
-                                        <button type="submit" class="search-icon-btn"><i
-                                                class="icon-search"></i></button>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">پنل کاربری</a>
+                            <div class="dropdown-menu mega-menu fade-down">
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <a class="dropdown-item" href="{% url 'user:profile' %}">پروفایل</a>
+                                        {% if request.user.is_authenticated %}
+                                        <a class="dropdown-item" href="{% url 'user:logout' %}">خروج</a>
+                                        {% endif %}
+                                        <a class="dropdown-item" href="{% url 'user:notification' %}">اعلانات</a>
+                                        <a class="dropdown-item" href="{% url 'user:user-bookmarks' %}">علاقه مندیها</a>
                                     </div>
-                                </form>
+                                </div>
                             </div>
-
-                        </div>
+                        </li>
                         <div class="color-mode theme-mode-control">
                             <button type="button" class="nav-right-link light-btn"><i class="icon-sun"></i></button>
                             <button type="button" class="nav-right-link dark-btn"><i
