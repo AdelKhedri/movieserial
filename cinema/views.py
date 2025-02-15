@@ -1,13 +1,12 @@
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
-from django.views.generic import View, ListView
+from django.views.generic import View
 from django.utils import timezone
 from django.db.models import Q
 from django.core.paginator import Paginator
-from .models import Country, MainPageCarousel, MainPageCategory, MediaBookmark, Movie, Comment, Geners, Serial
-from .forms import CommentForm, ContactUsForm
-from user.forms import RecaptchaForm
+from .models import Country, MediaBookmark, Movie, Comment, Geners, Serial
+from .forms import CommentForm
 from .filters import MovieFilter, SerialFilter
 
 
@@ -179,42 +178,3 @@ class EpisodeDetailsView(View):
                 self.context['msg'] = comment_form
         return render(request, self.template_name, self.context)
 
-
-class Home(ListView):
-    template_name = 'cinema/index.html'
-    queryset = MainPageCategory.objects.all()
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['carousel_list'] = MainPageCarousel.objects.all()
-        context['gener_list'] = Geners.objects.all()
-        context['country_list'] = Country.objects.all()
-        return context
-
-
-class ContactUsView(View):
-    template_name = 'cinema/contact-us.html'
-
-    def setup(self, request, *args, **kwargs):
-        self.context = {
-            'form': ContactUsForm(),
-            'gener_list': Geners.objects.all(),
-            'recaptcha_form': RecaptchaForm()
-        }
-        return super().setup(request, *args, **kwargs)
-
-    def get(self, request, *args, **kwargs):
-        return render(request, self.template_name, self.context)
-
-    def post(self, request, *args, **kwargs):
-        recaptcha_form = RecaptchaForm(request.POST)
-        if recaptcha_form.is_valid():
-            form_contact_us = ContactUsForm(request.POST)
-            if form_contact_us.is_valid():
-                form_contact_us.save()
-                self.context['msg'] = 'success full'
-            else:
-                self.context['form'] = form_contact_us
-        else:
-            self.context['msg'] = 'recaptcha failed'
-        return render(request, self.template_name, self.context)
