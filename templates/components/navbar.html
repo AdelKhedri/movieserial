@@ -96,7 +96,7 @@
                             </div>
                         </li>
                         <li class="nav-item"><a class="nav-link {{ contact_us|default:'' }}" href="{% url 'contact-us' %}">تماس با ما</a></li>
-                        <li class="nav-item"><a class="nav-link" href="live.html">درباره ما</a></li>
+                        <li class="nav-item"><a class="nav-link {{ about|default:'' }}" href="{% url 'about' %}">درباره ما</a></li>
                         {% if not request.user.is_authenticated %}
                             <li class="nav-item"><a class="nav-link" href="{% url 'user:login' %}">ورود</a></li>
                             <li class="nav-item"><a class="nav-link" href="{% url 'user:register' %}">ثبت نام</a></li>

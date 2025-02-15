@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.views.generic import ListView, View
-from cinema.models import MainPageCarousel, MainPageCategory, Country, Geners
+from cinema.models import MainPageCarousel, MainPageCategory, Country, Geners, Team
 from .forms import ContactUsForm
 from user.forms import RecaptchaForm
 
@@ -56,3 +56,11 @@ def termsView(request):
     return render(request, 'cinema/terms.html', context)
 
 
+def aboutView(request):
+    context = {
+        'gener_list': Geners.objects.all(),
+        'country_list': Country.objects.all(),
+        'about': 'active',
+        'team': Team.objects.all()
+    }
+    return render(request, 'cinema/about.html', context)

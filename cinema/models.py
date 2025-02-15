@@ -287,3 +287,20 @@ class ContactUs(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Team(models.Model):
+    name = models.CharField(max_length=150, verbose_name='نام')
+    role = models.CharField(max_length=150, verbose_name='سمت')
+    picture = models.ImageField(upload_to='images', verbose_name='عکس')
+    social_facebook = models.URLField(verbose_name='ادرس فیسبوک')
+    social_instagram = models.URLField(verbose_name='ادرس اینستاگرام')
+    social_linkedin = models.URLField(verbose_name='ادرس لینکدین')
+    social_github = models.URLField(verbose_name='ادرس گیت هاب')
+
+    class Meta:
+        verbose_name = 'عضو تیم'
+        verbose_name_plural = 'اعضای تیم'
+
+    def __str__(self):
+        return self.name
