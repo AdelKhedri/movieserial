@@ -10,6 +10,11 @@ default_attr = {
 class CostumSelec():
     pass
 class MovieFilter(django_filters.FilterSet):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.filters['countrys'].extra['choices'] = [(countrys.id, countrys.name) for countrys in Country.objects.all()]
+        self.filters['geners'].extra['choices'] = [(gener.id, gener.name) for gener in Geners.objects.all()]
+
     english_name = django_filters.CharFilter(
         lookup_expr='contains',
         label='نام انگلیسی',
@@ -51,13 +56,13 @@ class MovieFilter(django_filters.FilterSet):
         widget=forms.TextInput(attrs={'class': 'form-control', 'style': 'padding: 10px'})
     )
     countrys = django_filters.MultipleChoiceFilter(
-        choices=[(countrys.id, countrys.name) for countrys in Country.objects.all()],
+        # choices=[(countrys.id, countrys.name) for countrys in Country.objects.all()],
         label='کشور',
         lookup_expr='in',
         widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
     )
     geners = django_filters.MultipleChoiceFilter(
-        choices = [(gener.id, gener.name) for gener in Geners.objects.all()],
+        # choices = [(gener.id, gener.name) for gener in Geners.objects.all()],
         label='ژانر ها',
         lookup_expr='in',
         widget=forms.CheckboxSelectMultiple(attrs={ 'class': 'form-check-input'}),
