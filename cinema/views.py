@@ -5,7 +5,7 @@ from django.views.generic import View, ListView
 from django.utils import timezone
 from django.db.models import Q
 from django.core.paginator import Paginator
-from .models import Country, MediaBookmark, Movie, Comment, Geners, Serial
+from .models import Agents, Country, MediaBookmark, Movie, Comment, Geners, Serial
 from .forms import CommentForm
 from .filters import MovieFilter, SerialFilter
 
@@ -217,6 +217,39 @@ class CountryView(ListView):
         context.update({
             'page_name': 'country view',
             'page_title': f'مدیا های کشور {self.country} | نت موی',
+            'gener_list': Geners.objects.all(),
+            'country_list': Country.objects.all(),
+        })
+        return context
+
+
+class AgentView(ListView):
+    template_name = 'cinema/movies-filter.html'
+    paginate_by = 15
+    context_object_name = 'media'
+
+    def get_queryset(self):
+        role_type = self.kwargs['role_type']
+        agent_id = self.kwargs['agent_id']
+        role_types = ['actor', 'director']
+        if role_type not in role_types:
+            raise Http404()
+
+        self.agent = get_object_or_404(Agents, role = role_type, id = agent_id)
+        
+        if role_type == 'actor':
+            movies = list(Movie.objects.prefetch_related('geners').filter(stars=self.agent).only('id', 'quality', 'baner', 'duration', 'persian_name', 'geners'))
+            serial = list(Serial.objects.prefetch_related('geners').filter(stars=self.agent).only('id', 'quality', 'baner', 'persian_name', 'geners'))
+        else:
+            movies = list(Movie.objects.prefetch_related('geners').filter(director=self.agent).only('id', 'quality', 'baner', 'duration', 'persian_name', 'geners'))
+            serial = list(Serial.objects.prefetch_related('geners').filter(director=self.agent).only('id', 'quality', 'baner', 'persian_name', 'geners'))
+        return movies + serial
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'page_title': f'مدیا های {"بازیگر" if self.kwargs["role_type"] == "actor" else "کارگردان"} {self.agent.name}',
+            'page_name': 'agent view',
             'gener_list': Geners.objects.all(),
             'country_list': Country.objects.all(),
         })
