@@ -41,7 +41,7 @@
                         <div class="movie-info-item">
                             <strong>ژانر:</strong>
                             {% for gener in media.geners.all %}
-                            <a href="#">{{ gener.name }}</a>
+                            <a href="{% url 'media:gener-view' gener.slug %}">{{ gener.name }}</a>
                             {% if not forloop.last %}
                             <span class="mx-1">|</span>
                             {% endif %}
@@ -49,12 +49,12 @@
                         </div>
                         <div class="movie-info-item">
                             <strong>کارگردان:</strong>
-                            <a href="#">{{ media.director|default:'' }}</a>
+                            <a href="{% url 'media:agent-view' 'director' media.director.id %}">{{ media.director|default:'' }}</a>
                         </div>
                         <div class="movie-info-item">
                             <strong>بازیگران:</strong>
                             {% for star in media.stars.all %}
-                            <a href="#">{{ star.name }}</a>
+                            <a href="{% url 'media:agent-view' 'actor' star.id %}">{{ star.name }}</a>
                             {% if not forloop.last %}
                             <span class="mx-1">|</span>
                             {% endif %}
@@ -63,7 +63,7 @@
                         <div class="movie-info-item">
                             <strong>کشور:</strong>
                             {% for country in media.countrys.all %}
-                                <a href="#">{{ country }}</a>
+                                <a href="{% url 'media:country-view' country.slug %}">{{ country }}</a>
                                 {% if not forloop.last %}
                                 <span class="mx-1">|</span>
                                 {% endif %}

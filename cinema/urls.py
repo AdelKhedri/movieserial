@@ -1,5 +1,6 @@
 from django.urls import path
-from .views import CountryView, MovieDetailsView, FilterMediaView, SerialDetailsView, ToggleBookmarkMediaView, EpisodeDetailsView, GenerView
+from .views import (CountryView, MovieDetailsView, FilterMediaView, SerialDetailsView, ToggleBookmarkMediaView, EpisodeDetailsView, GenerView,
+                    AgentView, )
 
 
 app_name = 'media'
@@ -11,4 +12,5 @@ urlpatterns = [
     path('serial/<slug:slug>/<int:section_pk>/<int:episode_pk>/', EpisodeDetailsView.as_view(), name='serial-details-episode'),
     path('gener/<slug:gener_slug>', GenerView.as_view(), name='gener-view'),
     path('country/<slug:country_slug>', CountryView.as_view(), name='country-view'),
+    path('<str:role_type>/<int:agent_id>', AgentView.as_view(), name='agent-view'),
 ]

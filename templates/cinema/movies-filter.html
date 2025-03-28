@@ -133,7 +133,7 @@
                     </div>
                     {% endfor %}
                 </div>
-                {% if page_name in 'gener view,country view' %}
+                {% if page_name in 'gener view,country view,agent view' %}
                 {% include 'components/pagination.html' with object=page_obj %}
                 {% else %}
                 {% include 'components/pagination.html' with object=media %}

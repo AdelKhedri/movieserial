@@ -5,12 +5,12 @@
         <a href="{{ media.get_absolute_url }}" class="movie-play"><i class="icon-play-3"></i></a>
     </div>
     <div class="movie-content">
-        <h6 class="movie-title"><a href="movie-single.html">{{ media.persian_name}}</a></h6>
+        <h6 class="movie-title"><a href="{{ media.get_absolute_url }}">{{ media.persian_name}}</a></h6>
         <div class="movie-info">
             <span class="movie-time">{{ media.time|date:'G ساعت و i دقیقه' }}</span>
             <div class="movie-genre">
                 {% for gener in media.geners.all %}
-                <a href="#">{{ gener.name }}</a>
+                <a href="{% url 'media:gener-view' gener.slug %}">{{ gener.name }}</a>
                 {% endfor %}
             </div>
         </div>
