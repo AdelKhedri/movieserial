@@ -1,7 +1,7 @@
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
-from django.views.generic import View
+from django.views.generic import View, ListView
 from django.utils import timezone
 from django.db.models import Q
 from django.core.paginator import Paginator
@@ -19,7 +19,7 @@ class MovieDetailsView(View):
     template_name = 'cinema/movie-details.html'
     
     def setup(self, request, *args, **kwargs):
-        self.movie = get_object_or_404(Movie, Q(release_date__gte=timezone.now()) | Q(release_date__isnull=True), **kwargs)
+        self.movie = get_object_or_404(Movie, Q(release_date__lte=timezone.now()) | Q(release_date__isnull=True), **kwargs)
         comment_count = Comment.objects.filter(accepted=True, media_type='movie', media_id=self.movie.id).count()
         comments = Comment.objects.filter(parent__isnull=True, accepted=True, media_type='movie', media_id=self.movie.id)
         is_bookmarked = MediaBookmark.objects.filter(user=request.user, media_type='movie', media_id=self.movie.pk).exists() if request.user.is_authenticated else False
@@ -178,3 +178,24 @@ class EpisodeDetailsView(View):
                 self.context['msg'] = comment_form
         return render(request, self.template_name, self.context)
 
+
+class GenerView(ListView):
+    template_name = 'cinema/movies-filter.html'
+    context_object_name = 'media'
+    paginate_by = 15
+
+    def get_queryset(self):
+        self.gener = get_object_or_404(Geners, slug = self.kwargs['gener_slug'])
+        movies = list(Movie.objects.prefetch_related('geners').filter(geners__slug=self.gener.slug).only('id', 'quality', 'baner', 'persian_name', 'duration', 'geners'))
+        serial = list(Serial.objects.prefetch_related('geners').filter(geners__slug=self.gener.slug).only('id', 'quality', 'baner', 'persian_name', 'geners'))
+        return movies + serial
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'page_name': 'gener view',
+            'page_title': f'ژانر: {self.gener.name} | نت موی',
+            'gener_list': Geners.objects.all(),
+            'country_list': Country.objects.all(),
+        })
+        return context
