@@ -43,7 +43,7 @@ class Agents(models.Model):
     photo = models.ImageField(upload_to='images/actor/', blank=True, verbose_name='عکس')
     imdb_link = models.URLField(blank=True, verbose_name='ادرس imdb')
     role_types = (('actor', 'بازیگر'), ('director', 'کارگردان'))
-    role = models.CharField(max_length=8, default='actor', verbose_name='نقش')
+    role = models.CharField(max_length=8, choices=role_types, default='actor', verbose_name='نقش')
 
     class Meta:
         verbose_name = 'عامل'
