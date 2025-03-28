@@ -199,3 +199,25 @@ class GenerView(ListView):
             'country_list': Country.objects.all(),
         })
         return context
+
+
+class CountryView(ListView):
+    template_name = 'cinema/movies-filter.html'
+    context_object_name = 'media'
+    paginate_by = 15
+
+    def get_queryset(self):
+        self.country = get_object_or_404(Country, slug = self.kwargs['country_slug'])
+        movies = list(Movie.objects.prefetch_related('geners').filter(countrys = self.country).only('id', 'quality', 'baner', 'persian_name', 'duration', 'geners'))
+        serial = list(Serial.objects.prefetch_related('geners').filter(countrys = self.country).only('id', 'quality', 'baner', 'persian_name', 'geners'))
+        return serial + movies
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'page_name': 'country view',
+            'page_title': f'مدیا های کشور {self.country} | نت موی',
+            'gener_list': Geners.objects.all(),
+            'country_list': Country.objects.all(),
+        })
+        return context

@@ -1,5 +1,6 @@
 {% extends 'cinema/base-site.html' %}
 {% load static %}
+
 {% block title %}
 {% if page_title %}
 {{ page_title }}
@@ -7,6 +8,7 @@
 جست و جو در فیلم ها
 {% endif%}
 {% endblock %}
+
 {% block content %}
 
     <main class="main">
@@ -131,7 +133,7 @@
                     </div>
                     {% endfor %}
                 </div>
-                {% if page_name == 'gener view' %}
+                {% if page_name in 'gener view,country view' %}
                 {% include 'components/pagination.html' with object=page_obj %}
                 {% else %}
                 {% include 'components/pagination.html' with object=media %}
