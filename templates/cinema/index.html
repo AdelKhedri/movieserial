@@ -19,12 +19,12 @@
                                             {{ add_media.get_media_object.persian_name }}
                                         </h1>
                                         <div class="hero-info" data-animation="fadeInDown" data-delay=".75s">
-                                            <span class="rating"><span><i class="far fa-star"></i>{{ add_media.get_media_object.imdb_point }}</span href="#">IMDB</span>
+                                            <span class="rating"><span><i class="far fa-star"></i>{{ add_media.get_media_object }}</span>IMDB</span>
                                             <span class="year">{{ add_media.get_media_object.year_create }}</span>
                                             <span class="time">{{ add_media.get_media_object.time|date:'G ساعت و i دقیقه' }}</span>
                                             <div class="genre">
                                                 {% for gener in add_media.get_media_object.geners.all %}
-                                                <a href="#">{{ gener.name }}</a>
+                                                <a href="{% url 'media:gener-view' gener.slug %}">{{ gener.name }}</a>
                                                 {% if not forloop.last %}
                                                 <span class="mx-1">|</span>
                                                 {% endif %}

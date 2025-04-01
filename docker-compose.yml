@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Docker/app/Dockerfile
+    container_name: 'app'
+    restart: 'always'
+    expose:
+      - 8000
+    volumes:
+      - type: 'bind'
+        source: '.'
+        target: '/app'
+    env_file:
+      - ./.env.prod
+    networks:
+      - service-network
+    depends_on:
+      - 'postgres'
+  
+  nginx:
+    build: ./Docker/nginx
+    container_name: 'nginx'
+    restart: 'always'
+    ports:
+      - '80:80'
+    depends_on:
+      - 'app'
+    networks:
+      - service-network
+    volumes:
+      - type: 'bind'
+        source: './static'
+        target: '/app/static'
+
+      - type: 'bind'
+        source: './media'
+        target: '/app/media'
+
+  postgres:
+    image: postgres:alpine
+    restart: 'always'
+    env_file:
+      - ./.env.prod
+    networks:
+      - service-network
+    volumes:
+      - type: 'bind'
+        source: './Docker/dbdata'
+        target: '/var/lib/postgresql/data'
+
+networks:
+  service-network:
+    driver: bridge
