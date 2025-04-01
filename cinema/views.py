@@ -8,6 +8,7 @@ from django.core.paginator import Paginator
 from .models import Agents, Country, MediaBookmark, Movie, Comment, Geners, Serial
 from .forms import CommentForm
 from .filters import MovieFilter, SerialFilter
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 def paginate_objects(resutl, per_page, page):
@@ -80,7 +81,7 @@ class FilterMediaView(View):
         return render(request, self.template_name, context)
 
 
-class ToggleBookmarkMediaView(View):
+class ToggleBookmarkMediaView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         if kwargs['media_type'] not in ['movie', 'serial']:
             raise Http404()
