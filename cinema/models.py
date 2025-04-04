@@ -63,7 +63,7 @@ class BaseMedia(models.Model):
     countrys = models.ManyToManyField(Country, blank=True, verbose_name='کشور')
     imdb_point = models.DecimalField(max_digits=4, decimal_places=2, validators=[MaxValueValidator(10.0), MinValueValidator(0.0)], verbose_name='امتیاز imdb')
     imdb_link = models.URLField(blank=True, verbose_name='لینک(ارجاع به  imdb)')
-    description = models.CharField(max_length=700, blank=True, verbose_name='درباره')
+    description = models.TextField(max_length=700, blank=True, verbose_name='درباره')
     baner = models.ImageField(upload_to=folder_finder, help_text='480px * 720px', verbose_name='عکس فیلم')
     trailer = models.URLField(blank=True, verbose_name='تریلر')
     director = models.ForeignKey(Agents, on_delete=models.SET_NULL, blank=True, null=True, verbose_name='کارگردان')
@@ -195,7 +195,7 @@ class Section(models.Model):
 
 
 class Serial(BaseMedia):
-    sections = models.ManyToManyField(Section, blank=True, verbose_name='بخش ها')
+    sections = models.ManyToManyField(Section, blank=True, verbose_name='فصل ها')
     last_episod = models.CharField(max_length=200, verbose_name='آخرین قسمت')
     related_serials = models.ManyToManyField('self', blank=True, verbose_name='سریال های مشابه')
     stars = models.ManyToManyField(Agents, blank=True, related_name='serial_stars', verbose_name='ستارگان')
