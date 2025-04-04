@@ -20,7 +20,7 @@
 os.path.join(BASE_DIR, 'static')
 ```
 ### Run command:
-```python
+```bash
 python manage.py runserver
 ```
 
