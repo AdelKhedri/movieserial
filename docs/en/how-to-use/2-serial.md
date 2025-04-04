@@ -1,8 +1,8 @@
-## Serial
+# Serial
 The *Serial* has a *section* field. *Section* is a ManyToManyField and can add multiple *episodes* and other data.
 each *episode* can contains many *links* like *Movie*.
 
-### add Serial: (serial detils):
+## add Serial: (serial detils):
 ![add-serial](../../images/serial-details.png)
 this is a example of serial details page.
 

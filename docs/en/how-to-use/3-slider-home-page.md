@@ -1,5 +1,5 @@
-## Slider
-### Slider at the top of the home page
+# Slider
+## Slider at the top of the home page
 ![slider](../../images/slider.png)
 
 **To add slider for use in home page:**
