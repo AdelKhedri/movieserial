@@ -10,13 +10,7 @@ For full documentation visit [mkdocs.org](https://www.mkdocs.org).
 * `docker-compose up --build` - runing the project with docker on production environment.
 
 ## See Full docs:
-- runing in local host: [Go](localhost.md#start-server-in-localhost)
-- Set variables: [Go](set-variables.md/#set-variables)
-- Runing in production: [Go](production.md)
-- Who to use models: [Go](how-to-use/1-movie.md)
-
-!!! note
-
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla et euismod
-    nulla. Curabitur feugiat, tortor non consequat finibus, justo purus auctor
-    massa, nec semper lorem quam in massa.
+### runing in local host: [Go](localhost.md#start-server-in-localhost)
+## Set variables: [Go](set-variables.md/#set-variables)
+## Runing in production: [Go](production.md)
+## Who to use models: [Go](how-to-use/1-movie.md)

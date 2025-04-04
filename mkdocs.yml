@@ -47,3 +47,5 @@ extra:
 
 extra_css:
   - stylesheets/lang.css
+extra_javascript:
+  - javascripts/lang-dir.js

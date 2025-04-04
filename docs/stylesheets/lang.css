@@ -1,0 +1,16 @@
+html[dir="rtl"] {
+    text-align: right;
+    direction: rtl;
+    font-family: Vazirmatn, Tahoma, sans-serif;
+  }
+  
+  html[dir="rtl"] .md-sidebar--primary {
+    right: 0;
+    left: auto;
+  }
+  
+  html[dir="rtl"] .md-sidebar--secondary {
+    left: 0;
+    right: auto;
+  }
+  
